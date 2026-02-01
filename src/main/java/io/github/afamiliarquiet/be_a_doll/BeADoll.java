@@ -1,20 +1,9 @@
 package io.github.afamiliarquiet.be_a_doll;
 
-import io.github.afamiliarquiet.be_a_doll.diary.BeABirdwatcher;
-import io.github.afamiliarquiet.be_a_doll.diary.BeABug;
-import io.github.afamiliarquiet.be_a_doll.diary.BeACollector;
-import io.github.afamiliarquiet.be_a_doll.diary.BeACook;
-import io.github.afamiliarquiet.be_a_doll.diary.BeACurator;
-import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
-import io.github.afamiliarquiet.be_a_doll.diary.BeAPenPal;
-import io.github.afamiliarquiet.be_a_doll.diary.BeAResearcher;
-import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
-import io.netty.buffer.ByteBuf;
+import io.github.afamiliarquiet.be_a_doll.diary.*;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundEvent;
@@ -87,11 +76,10 @@ public class BeADoll implements ModInitializer {
 			BeACurator.CLOCKWORK_FOOD_EMPTY, BeACurator.CLOCKWORK_FOOD_HALF, BeACurator.CLOCKWORK_FOOD_FULL);
 
 		public static final BeADoll.Variant DEFAULT = WOODEN;
-		public static final StringIdentifiable.EnumCodec<BeADoll.Variant> CODEC = StringIdentifiable.createCodec(BeADoll.Variant::values);
+		public static final com.mojang.serialization.Codec<BeADoll.Variant> CODEC = StringIdentifiable.createCodec(BeADoll.Variant::values);
 		private static final IntFunction<BeADoll.Variant> INDEX_MAPPER = ValueLists.createIdToValueFunction(
 			BeADoll.Variant::getIndex, values(), ValueLists.OutOfBoundsHandling.ZERO
 		);
-		public static final PacketCodec<ByteBuf, BeADoll.Variant> PACKET_CODEC = PacketCodecs.indexed(INDEX_MAPPER, BeADoll.Variant::getIndex);
 		private final int index;
 		private final String id;
 		private final TagKey<Item> careMaterial;

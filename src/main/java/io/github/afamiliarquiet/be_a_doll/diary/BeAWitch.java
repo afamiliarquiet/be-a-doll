@@ -1,12 +1,10 @@
 package io.github.afamiliarquiet.be_a_doll.diary;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
+import io.github.afamiliarquiet.be_a_doll.effect.CaredForStatusEffect;
 import io.github.afamiliarquiet.be_a_doll.effect.FragmentedStatusEffect;
 import io.github.afamiliarquiet.be_a_doll.effect.OverflowingStatusEffect;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.AbsorptionStatusEffect;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -18,8 +16,7 @@ public class BeAWitch {
 	public static final RegistryEntry<StatusEffect> CARED_FOR = Registry.registerReference(
 		Registries.STATUS_EFFECT,
 		BeADoll.id("cared_for"),
-		new AbsorptionStatusEffect(StatusEffectCategory.BENEFICIAL, 0xb0b8dd)
-			.addAttributeModifier(EntityAttributes.GENERIC_MAX_ABSORPTION, BeADoll.id("effect.cared_for"), 14.0, EntityAttributeModifier.Operation.ADD_VALUE)
+		new CaredForStatusEffect(StatusEffectCategory.BENEFICIAL, 0xb0b8dd, 14.0f)
 	);
 
 	public static final RegistryEntry<StatusEffect> FRAGMENTED = Registry.registerReference(
@@ -44,17 +41,17 @@ public class BeAWitch {
 			int combatAdjustedOverflowDuration = overflowingInstance.getDuration() * 3;
 			int fragmentedDuration = fragmentedInstance.getDuration();
 
-			entity.removeStatusEffect(OVERFLOWING);
-			entity.removeStatusEffect(FRAGMENTED);
+			entity.removeStatusEffect(OVERFLOWING.value());
+			entity.removeStatusEffect(FRAGMENTED.value());
 
 			int overflowRemainder = (combatAdjustedOverflowDuration - fragmentedDuration) / 3;
 			int fragmentedRemainder = fragmentedDuration - combatAdjustedOverflowDuration;
 
 			if (overflowRemainder > 0) {
-				entity.addStatusEffect(new StatusEffectInstance(OVERFLOWING, overflowRemainder, overflowingInstance.getAmplifier()));
+				entity.addStatusEffect(new StatusEffectInstance(OVERFLOWING.value(), overflowRemainder, overflowingInstance.getAmplifier()));
 			}
 			if (fragmentedRemainder > 0) {
-				entity.addStatusEffect(new StatusEffectInstance(FRAGMENTED, fragmentedRemainder, fragmentedInstance.getAmplifier()));
+				entity.addStatusEffect(new StatusEffectInstance(FRAGMENTED.value(), fragmentedRemainder, fragmentedInstance.getAmplifier()));
 			}
 		}
 	}

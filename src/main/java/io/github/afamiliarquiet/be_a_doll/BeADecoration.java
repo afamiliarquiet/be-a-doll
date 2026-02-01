@@ -1,5 +1,6 @@
 package io.github.afamiliarquiet.be_a_doll;
 
+import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -7,6 +8,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
+import virtuoel.pehkui.api.ScaleData;
 
 public class BeADecoration {
 	// here's where you become a shoulder decoration!
@@ -59,7 +61,7 @@ public class BeADecoration {
 		}
 
 		Arm armToSitOn = getArm(playerMount, doll, parrotCount);
-		Vec3d attachmentPos = new Vec3d((armToSitOn == Arm.LEFT ? 1 : -1) * 0.3625 * scaleFactor, dimensions.height(), 0);
+		Vec3d attachmentPos = new Vec3d((armToSitOn == Arm.LEFT ? 1 : -1) * 0.3625 * scaleFactor, dimensions.height, 0);
 
 		switch (playerMount.getPose()) {
 			case CROUCHING:
@@ -92,7 +94,9 @@ public class BeADecoration {
 		int freeSlots = 2;
 		freeSlots -= getParrotCount(playerMount);
 		freeSlots -= playerMount.getPassengerList().size();
-		return freeSlots > 0 && doll.getScale() / playerMount.getScale() <= 0.31;
+		ScaleData dollScale = BeALibrarian.DOLL_SCALE_TYPE.getScaleData(doll);
+		ScaleData playerMountScale = BeALibrarian.DOLL_SCALE_TYPE.getScaleData(playerMount);
+		return freeSlots > 0 && dollScale.getScale() / playerMountScale.getScale() <= 0.31;
 	}
 
 	public static Vec3d updatePassengerForDismount(PlayerEntity playerMount, PlayerEntity doll) {
@@ -100,7 +104,7 @@ public class BeADecoration {
 	}
 
 	public static boolean shoulderEntityIsEmpty(LivingEntity playerMountTrustMe, boolean parrotsEmpty, Arm testArm) {
-		int likelyDollCount = playerMountTrustMe.getPlayerPassengers();
+		int likelyDollCount = (int) playerMountTrustMe.getPassengerList().stream().filter(PlayerEntity.class::isInstance).count();
 		boolean dollsEmpty = true;
 
 		if (likelyDollCount > 1) {

@@ -7,16 +7,15 @@ import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.registry.entry.RegistryEntry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(LivingEntity.class)
 public abstract class FragmentedDamageLivingEntityMixin {
-	@ModifyExpressionValue(method = "modifyAppliedDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasStatusEffect(Lnet/minecraft/registry/entry/RegistryEntry;)Z"))
+	@ModifyExpressionValue(method = "modifyAppliedDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;hasStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z"))
 	private boolean butWhatIfFragmentedToo(boolean original) {
-		return original || hasStatusEffect(BeAWitch.FRAGMENTED);
+		return original || hasStatusEffect(BeAWitch.FRAGMENTED.value());
 	}
 
 //	@ModifyExpressionValue(method = "modifyAppliedDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/effect/StatusEffectInstance;getAmplifier()I"))
@@ -32,16 +31,16 @@ public abstract class FragmentedDamageLivingEntityMixin {
 	private int waitCrapDontTouchThatNullNOOOOO(StatusEffectInstance instance, Operation<Integer> original) {
 //		return instance == null ? -1 : original.call(instance);
 		int safeResistanceAmplifier = instance == null ? -1 : original.call(instance);
-		if (hasStatusEffect(BeAWitch.FRAGMENTED)) {
-			return safeResistanceAmplifier - (getStatusEffect(BeAWitch.FRAGMENTED).getAmplifier() + 1);
+		if (hasStatusEffect(BeAWitch.FRAGMENTED.value())) {
+			return safeResistanceAmplifier - (getStatusEffect(BeAWitch.FRAGMENTED.value()).getAmplifier() + 1);
 		} else {
 			return safeResistanceAmplifier;
 		}
 	}
 
 	@Shadow
-	public abstract boolean hasStatusEffect(RegistryEntry<StatusEffect> effect);
+	public abstract boolean hasStatusEffect(StatusEffect effect);
 
 	@Shadow
-	public abstract StatusEffectInstance getStatusEffect(RegistryEntry<StatusEffect> effect);
+	public abstract StatusEffectInstance getStatusEffect(StatusEffect effect);
 }

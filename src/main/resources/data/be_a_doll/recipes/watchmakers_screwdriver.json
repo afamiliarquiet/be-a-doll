@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"key": {
+		"#": {"item": "minecraft:iron_nugget"},
+		"I": {"item": "minecraft:stick"}
+	},
+	"pattern": [
+		" #",
+		"I "
+	],
+	"result": {
+		"count": 1,
+		"item": "be_a_doll:watchmakers_screwdriver"
+	}
+}

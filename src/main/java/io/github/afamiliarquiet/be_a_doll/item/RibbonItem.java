@@ -3,11 +3,7 @@ package io.github.afamiliarquiet.be_a_doll.item;
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import io.github.afamiliarquiet.be_a_doll.diary.BeABirdwatcher;
 import io.github.afamiliarquiet.be_a_doll.mixin.synthetic_treats.FoxEntityTrustInvoker;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Tameable;
+import net.minecraft.entity.*;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -22,10 +18,11 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
-import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+
+import java.util.Collections;
 
 public class RibbonItem extends Item {
 	public RibbonItem(Settings settings) {
@@ -76,7 +73,9 @@ public class RibbonItem extends Item {
 		// yeah no lol. did you not see the C2SDollDismountLetter i had to make? client's gotta hear about this
 		if (/*!user.getWorld().isClient && */!user.getPassengerList().isEmpty() && user.shouldCancelInteraction()) {
 //			user.removeAllPassengers();
-			Entity doll = user.getPassengerList().getLast();
+			// intellij might tell you this can be replaced with getLast
+			// it cannot. we are in java 17.
+			Entity doll = user.getPassengerList().get(user.getPassengerList().size() - 1);
 			BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
 			Vec3d pos;
 			// fear my mega if statement of doom! it could be worse. i'm just being a little bit silly with it.
@@ -86,7 +85,7 @@ public class RibbonItem extends Item {
 				&& doll instanceof ServerPlayerEntity serverPlayerEntity
 				&& (pos = getDollPlacementPos(blockHitResult, doll)) != null
 			) {
-				serverPlayerEntity.teleportTo(new TeleportTarget((ServerWorld) serverPlayerEntity.getWorld(), pos, Vec3d.ZERO, user.getYaw() + 180, user.getPitch() * -1, TeleportTarget.NO_OP));
+				serverPlayerEntity.teleport((ServerWorld) serverPlayerEntity.getWorld(), pos.x, pos.y, pos.z, Collections.emptySet(), user.getYaw() + 180, user.getPitch() * -1);
 			}
 			user.playSound(BeABirdwatcher.RAVEN_CRY, 1f, 1f);
 			return TypedActionResult.success(user.getStackInHand(hand));
@@ -101,7 +100,7 @@ public class RibbonItem extends Item {
 
 		if (blockHitResult.getSide().getAxis() == Direction.Axis.Y) {
 			if (blockHitResult.getSide() == Direction.DOWN) {
-				pos = pos.add(0, -dollStanding.height(), 0);
+				pos = pos.add(0, -dollStanding.height, 0);
 			}
 
 			// just because i'm feeling extra nice, i'll give you a horizontal aim assist too.
@@ -113,7 +112,7 @@ public class RibbonItem extends Item {
 			}
 		} else {
 			Vector3f sideVec = blockHitResult.getSide().getUnitVector();
-			pos = pos.add(sideVec.x * dollStanding.width() / 2, 0, sideVec.z * dollStanding.width() / 2);
+			pos = pos.add(sideVec.x * dollStanding.width / 2, 0, sideVec.z * dollStanding.width / 2);
 
 			// adjust for being low or high enough to clip into a possible adjacent block
 			pos = checkForCollisionsOnAxis(doll, dollStanding, pos, Direction.Axis.Y);
@@ -137,8 +136,8 @@ public class RibbonItem extends Item {
 			return pos;
 		} else {
 			double xyz = pos.getComponentAlongAxis(axis);
-			double positiveEdgeCrumb = (xyz + (axis.isVertical() ? dollStanding.height() : dollStanding.width() / 2)) - Math.ceil(xyz);
-			double negativeEdgeCrumb = Math.floor(xyz) - (xyz - (axis.isVertical() ? 0 : dollStanding.width() / 2));
+			double positiveEdgeCrumb = (xyz + (axis.isVertical() ? dollStanding.height : dollStanding.width / 2)) - Math.ceil(xyz);
+			double negativeEdgeCrumb = Math.floor(xyz) - (xyz - (axis.isVertical() ? 0 : dollStanding.width / 2));
 			if (positiveEdgeCrumb < 0.5 && positiveEdgeCrumb > 0 && !doll.getWorld().getBlockCollisions(doll, dollStanding.getBoxAt(pos.withAxis(axis, xyz - positiveEdgeCrumb))).iterator().hasNext()) {
 				// yay! adjusting doll down a bit works, try now
 				return pos.withAxis(axis, xyz - positiveEdgeCrumb);

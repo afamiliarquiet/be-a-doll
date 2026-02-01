@@ -2,7 +2,6 @@ package io.github.afamiliarquiet.be_a_doll.mixin;
 
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class DollNameTagItemMixin {
 	@Inject(at = @At("HEAD"), method = "useOnEntity", cancellable = true)
 	private void useOnDoll(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-		if (entity instanceof PlayerEntity doll && BeAMaid.isDoll(doll)) {
-			Text text = stack.get(DataComponentTypes.CUSTOM_NAME);
+		if (entity instanceof PlayerEntity doll && BeAMaid.isDoll(doll) && stack.hasCustomName()) {
+			Text text = stack.getName();
 			if (text != null) {
 				if (!user.getWorld().isClient && entity.isAlive()) {
 					BeALibrarian.relabelDoll(doll, text);

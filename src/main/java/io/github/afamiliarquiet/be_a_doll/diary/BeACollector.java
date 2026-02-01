@@ -1,72 +1,77 @@
 package io.github.afamiliarquiet.be_a_doll.diary;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.item.DollcraftItem;
 import io.github.afamiliarquiet.be_a_doll.item.RibbonItem;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.component.type.FoodComponent;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Rarity;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 public class BeACollector {
-	public static final ComponentType<BeADoll.Variant> DOLL_VARIANT_COMPONENT = registerComponent(
-		"doll_variant", builder -> builder.codec(BeADoll.Variant.CODEC).packetCodec(BeADoll.Variant.PACKET_CODEC)
-	);
-
-	public static final Item CARVING_KNIFE = registerItem("carving_knife", DollcraftItem::new, new Item.Settings()
-		.maxDamage(310).attributeModifiers(weapon(4, -2.4f))
-		.component(BeACollector.DOLL_VARIANT_COMPONENT, BeADoll.Variant.WOODEN));
-	public static final Item MODELING_TOOL = registerItem("modeling_tool", DollcraftItem::new, new Item.Settings()
-		.maxDamage(310).attributeModifiers(weapon(2, -1.3f))
-		.component(BeACollector.DOLL_VARIANT_COMPONENT, BeADoll.Variant.CLAY));
-	public static final Item SEWING_NEEDLE = registerItem("sewing_needle", DollcraftItem::new, new Item.Settings()
-		.maxDamage(310).attributeModifiers(weapon(3, -2f))
-		.component(BeACollector.DOLL_VARIANT_COMPONENT, BeADoll.Variant.CLOTH));
-	public static final Item FLUSH_CUTTER = registerItem("flush_cutter", DollcraftItem::new, new Item.Settings()
-		.maxDamage(310).attributeModifiers(weapon(2.5f, -1.6f))
-		.component(BeACollector.DOLL_VARIANT_COMPONENT, BeADoll.Variant.PLASTIC));
-	public static final Item WATCHMAKERS_SCREWDRIVER = registerItem("watchmakers_screwdriver", DollcraftItem::new, new Item.Settings()
-		.maxDamage(310).attributeModifiers(weapon(3.5f, -2.4f))
-		.component(BeACollector.DOLL_VARIANT_COMPONENT, BeADoll.Variant.CLOCKWORK));
+	public static final Item CARVING_KNIFE = registerItem("carving_knife", settings -> new DollcraftItem(settings, weapon(4, -2.4f), BeADoll.Variant.WOODEN), new Item.Settings()
+		.maxDamage(310));
+	public static final Item MODELING_TOOL = registerItem("modeling_tool", settings -> new DollcraftItem(settings, weapon(2, -1.3f), BeADoll.Variant.CLAY), new Item.Settings()
+		.maxDamage(310));
+	public static final Item SEWING_NEEDLE = registerItem("sewing_needle", settings -> new DollcraftItem(settings, weapon(3, -2f), BeADoll.Variant.CLOTH), new Item.Settings()
+		.maxDamage(310));
+	public static final Item FLUSH_CUTTER = registerItem("flush_cutter", settings -> new DollcraftItem(settings, weapon(2.5f, -1.6f), BeADoll.Variant.PLASTIC), new Item.Settings()
+		.maxDamage(310));
+	public static final Item WATCHMAKERS_SCREWDRIVER = registerItem("watchmakers_screwdriver", settings -> new DollcraftItem(settings, weapon(3.5f, -2.4f), BeADoll.Variant.CLOCKWORK), new Item.Settings()
+		.maxDamage(310));
 
 	public static final Item ESSENCE_FRAGMENT = registerItem("essence_fragment", Item::new, new Item.Settings()
 		.maxCount(1)
 		.rarity(Rarity.EPIC)
-		.component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
-		.component(DOLL_VARIANT_COMPONENT, BeADoll.Variant.REPRESSED)
-		.component(DataComponentTypes.FOOD, new FoodComponent(
-			0, 0, true, 3.1f, Optional.empty(),
-			List.of(
-				new FoodComponent.StatusEffectEntry(new StatusEffectInstance(BeAWitch.FRAGMENTED, 7200, 5), 1),
-				new FoodComponent.StatusEffectEntry(new StatusEffectInstance(StatusEffects.INSTANT_DAMAGE, 1, 0), 1)//,
-//				new PlaySoundConsumeEffect(RegistryEntry.of(BeABirdwatcher.ESSENCE_EAT_HEY_WAIT_WHAT_DO_YOU_MEAN_EATEN))
-			)
-		))
+		.food(new FoodComponent.Builder()
+			.hunger(0)
+			.saturationModifier(0)
+			.meat()
+			.statusEffect(new StatusEffectInstance(BeAWitch.FRAGMENTED.value(), 7200, 5), 1.f)
+			.statusEffect(new StatusEffectInstance(StatusEffects.INSTANT_DAMAGE, 1, 0), 1.f)
+			.build()
+		)
 	);
 
 	public static final Item DOLL_RIBBON = registerItem("ribbon", RibbonItem::new, new Item.Settings());
 
+	public static Optional<BeADoll.Variant> getDollVariant(ItemStack stack) {
+		if (stack.getItem() instanceof DollcraftItem dollCraft) {
+			return Optional.of(dollCraft.getVariant());
+		}
 
+		return getDollVariantFromStackNbt(stack);
+	}
+
+	private static Optional<BeADoll.Variant> getDollVariantFromStackNbt(ItemStack stack) {
+		NbtCompound nbt = stack.getNbt();
+		if (nbt != null && nbt.contains("be_a_doll:variant")) {
+			return BeADoll.Variant.CODEC.parse(NbtOps.INSTANCE, nbt.get("be_a_doll:variant"))
+				.resultOrPartial(str -> {});
+		}
+		return Optional.empty();
+	}
+
+	public static void setDollVariant(ItemStack stack, BeADoll.Variant variant) {
+		BeADoll.Variant.CODEC.encodeStart(NbtOps.INSTANCE, variant)
+			.resultOrPartial(BeADoll::warn)
+			.ifPresent(element -> stack.getOrCreateNbt().put("be_a_doll:variant", element));
+	}
 
 	public static void inquireAboutTheCollection() {
 		ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(itemGroup -> {
@@ -93,25 +98,15 @@ public class BeACollector {
 		return RegistryKey.of(RegistryKeys.ITEM, BeADoll.id(thing));
 	}
 
-
-
-	private static <T> ComponentType<T> registerComponent(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
-		return Registry.register(Registries.DATA_COMPONENT_TYPE, BeADoll.id(id), builderOperator.apply(ComponentType.builder()).build());
-	}
-
-
-
-	public static AttributeModifiersComponent weapon(float attackDamage, float attackSpeed) {
-		return AttributeModifiersComponent.builder()
-			.add(
+	public static Multimap<EntityAttribute, EntityAttributeModifier> weapon(float attackDamage, float attackSpeed) {
+		return ImmutableMultimap.<EntityAttribute, EntityAttributeModifier>builder()
+			.put(
 				EntityAttributes.GENERIC_ATTACK_DAMAGE,
-				new EntityAttributeModifier(Item.BASE_ATTACK_DAMAGE_MODIFIER_ID, attackDamage, EntityAttributeModifier.Operation.ADD_VALUE),
-				AttributeModifierSlot.MAINHAND
+				new EntityAttributeModifier(Item.ATTACK_DAMAGE_MODIFIER_ID, "doll.attack_damage", attackDamage, EntityAttributeModifier.Operation.ADDITION)
 			)
-			.add(
+			.put(
 				EntityAttributes.GENERIC_ATTACK_SPEED,
-				new EntityAttributeModifier(Item.BASE_ATTACK_SPEED_MODIFIER_ID, attackSpeed, EntityAttributeModifier.Operation.ADD_VALUE),
-				AttributeModifierSlot.MAINHAND
+				new EntityAttributeModifier(Item.ATTACK_SPEED_MODIFIER_ID, "doll.attack_speed", attackSpeed, EntityAttributeModifier.Operation.ADDITION)
 			)
 			.build();
 	}

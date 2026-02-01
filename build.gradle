@@ -26,6 +26,19 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
+
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Jitpack"
+				url = 'https://jitpack.io'
+			}
+		}
+
+		filter {
+			includeGroup "com.github.Virtuoel"
+		}
+	}
 }
 
 loom {
@@ -52,12 +65,16 @@ dependencies {
 	implementation 'folk.sisby:kaleido-config:0.3.1+1.3.1'
 	include 'folk.sisby:kaleido-config:0.3.1+1.3.1'
 
+	modApi(libs.pehkui) {
+		exclude group: 'net.fabricmc.fabric-api'
+	}
+
 	// extra treat for clockwork dolls.. nevermind sorry 1.21.1 users
 //	modCompileOnly "maven.modrinth:occipital-metonymy:C_"
 
 	// doll-to-doll communication compat
-	modCompileOnly "maven.modrinth:styled-chat:2.6.1+1.21"
-	modCompileOnly "maven.modrinth:placeholder-api:2.4.2+1.21"
+	modCompileOnly "maven.modrinth:styled-chat:2.2.4+1.20.1"
+	modCompileOnly "maven.modrinth:placeholder-api:2.1.4+1.20.1"
 }
 
 processResources {
@@ -84,13 +101,13 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = "UTF-8"
-	it.options.release = 21
+	it.options.release = 17
 }
 
 java {
 	withSourcesJar()
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 

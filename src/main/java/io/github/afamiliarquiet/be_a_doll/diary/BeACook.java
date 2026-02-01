@@ -1,6 +1,7 @@
 package io.github.afamiliarquiet.be_a_doll.diary;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -8,12 +9,16 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 public class BeACook {
 	// this can probably? move with the recipe if it ever moves
@@ -26,20 +31,21 @@ public class BeACook {
 	// i'll move it out if i make another, same as pen pal
 	public static class EssenceArtistryRecipe extends SpecialCraftingRecipe {
 
-		public EssenceArtistryRecipe(CraftingRecipeCategory category) {
-			super(category);
+		public EssenceArtistryRecipe(Identifier id, CraftingRecipeCategory category) {
+			super(id, category);
 		}
 
 		@Override
-		public boolean matches(CraftingRecipeInput input, World world) {
-			if (input.getStackCount() != 2) {
+		public boolean matches(RecipeInputInventory input, World world) {
+			List<ItemStack> inputStacks = input.getInputStacks();
+			if (inputStacks.stream().filter(Predicate.not(ItemStack::isEmpty)).count() != 2) {
 				return false;
 			} else {
 				boolean hasOneEssenceFragment = false;
 				boolean hasOneDollcraftItem = false;
 
-				for (int i = 0; i < input.getSize(); i++) {
-					ItemStack current = input.getStackInSlot(i);
+				for (int i = 0; i < inputStacks.size(); i++) {
+					ItemStack current = inputStacks.get(i);
 					if (!current.isEmpty()) {
 						if (current.isIn(BeAResearcher.DOLLCRAFT_ITEMS) || current.isOf(Items.DIAMOND_PICKAXE)) {
 							if (hasOneDollcraftItem) {
@@ -65,13 +71,15 @@ public class BeACook {
 		}
 
 		@Override
-		public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup registries) {
+		public ItemStack craft(RecipeInputInventory input, DynamicRegistryManager registries) {
 			BeADoll.Variant dollVariant = null;
 			ItemStack essenceFragment = ItemStack.EMPTY;
 
-			for (int i = 0; i < input.getSize(); i++) {
-				ItemStack current = input.getStackInSlot(i);
+			List<ItemStack> inputStacks = input.getInputStacks();
+			for (int i = 0; i < inputStacks.size(); i++) {
+				ItemStack current = inputStacks.get(i);
 				if (!current.isEmpty()) {
+					Optional<BeADoll.Variant> variant = BeACollector.getDollVariant(current);
 					if (current.isOf(BeACollector.ESSENCE_FRAGMENT)) {
 						if (!essenceFragment.isEmpty()) { // no mass fabrication, one at a time
 							return ItemStack.EMPTY;
@@ -84,12 +92,8 @@ public class BeACook {
 						}
 
 						dollVariant = BeADoll.Variant.REPRESSED;
-					} else if (current.get(BeACollector.DOLL_VARIANT_COMPONENT) != null) {
-						if (dollVariant != null) {
-							return ItemStack.EMPTY;
-						}
-
-						dollVariant = current.get(BeACollector.DOLL_VARIANT_COMPONENT);
+					} else if (variant.isPresent()) {
+						dollVariant = variant.get();
 					} else {
 						// not either of the items i want? then perish
 						return ItemStack.EMPTY;
@@ -99,7 +103,7 @@ public class BeACook {
 
 			if (!essenceFragment.isEmpty() && dollVariant != null) {
 				ItemStack alteredFragment = essenceFragment.copy();
-				alteredFragment.set(BeACollector.DOLL_VARIANT_COMPONENT, dollVariant);
+				BeACollector.setDollVariant(alteredFragment, dollVariant);
 				return alteredFragment;
 			} else {
 				return ItemStack.EMPTY;
@@ -107,11 +111,12 @@ public class BeACook {
 		}
 
 		@Override
-		public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput input) {
-			DefaultedList<ItemStack> remainders = DefaultedList.ofSize(input.getSize(), ItemStack.EMPTY);
+		public DefaultedList<ItemStack> getRemainder(RecipeInputInventory input) {
+			List<ItemStack> inputStacks = input.getInputStacks();
+			DefaultedList<ItemStack> remainders = DefaultedList.ofSize(inputStacks.size(), ItemStack.EMPTY);
 
 			for (int i = 0; i < remainders.size(); i++) {
-				ItemStack current = input.getStackInSlot(i);
+				ItemStack current = inputStacks.get(i);
 				Item weirdAndUnlikelyRemainder = current.getItem().getRecipeRemainder();
 				if (weirdAndUnlikelyRemainder != null) {
 					remainders.set(i, new ItemStack(weirdAndUnlikelyRemainder));

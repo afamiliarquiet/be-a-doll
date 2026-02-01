@@ -6,11 +6,12 @@
 		"I": {"item": "minecraft:stick"}
 	},
 	"pattern": [
-		" #",
-		"I "
+		" # ",
+		"II#",
+		" I "
 	],
 	"result": {
 		"count": 1,
-		"id": "be_a_doll:watchmakers_screwdriver"
+		"item": "be_a_doll:flush_cutter"
 	}
 }

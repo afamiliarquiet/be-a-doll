@@ -2,33 +2,34 @@ package io.github.afamiliarquiet.be_a_doll.letters;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.BeASelf;
-import io.netty.buffer.ByteBuf;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public record C2SEssenceAlterationLetter(boolean inserting) implements CustomPayload {
-	public static final CustomPayload.Id<C2SEssenceAlterationLetter> ID = new CustomPayload.Id<>(BeADoll.id("essence_alteration_letter"));
-
-	public static final PacketCodec<ByteBuf, C2SEssenceAlterationLetter> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.BOOL,
-		C2SEssenceAlterationLetter::inserting,
-		C2SEssenceAlterationLetter::new
+public record C2SEssenceAlterationLetter(boolean inserting) implements FabricPacket {
+	public static final PacketType<C2SEssenceAlterationLetter> ID = PacketType.create(
+		BeADoll.id("essence_alteration_letter"),
+		buf -> new C2SEssenceAlterationLetter(buf.readBoolean())
 	);
 
-	public static void receive(C2SEssenceAlterationLetter letter, ServerPlayNetworking.Context context) {
-		PlayerScreenHandler handler = context.player().playerScreenHandler;
-		ItemStack clickProcessedStack = BeASelf.clickSelf(handler.getCursorStack(), context.player(), letter.inserting());
-		if (clickProcessedStack != null && !context.player().isInCreativeMode()) {
+	public static void receive(C2SEssenceAlterationLetter letter, ServerPlayerEntity player) {
+		PlayerScreenHandler handler = player.playerScreenHandler;
+		ItemStack clickProcessedStack = BeASelf.clickSelf(handler.getCursorStack(), player, letter.inserting());
+		if (clickProcessedStack != null && !player.getAbilities().creativeMode) {
 			handler.setCursorStack(clickProcessedStack);
 		}
 	}
 
 	@Override
-	public Id<? extends CustomPayload> getId() {
+	public void write(PacketByteBuf packetByteBuf) {
+		packetByteBuf.writeBoolean(this.inserting);
+	}
+
+	@Override
+	public PacketType<?> getType() {
 		return ID;
 	}
 }

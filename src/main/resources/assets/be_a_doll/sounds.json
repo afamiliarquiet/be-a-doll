@@ -55,12 +55,10 @@
 	},
 	"entity.be_a_doll.doll.care.cloth": {
 		"sounds": [
-			"block/cobweb/break1",
-			"block/cobweb/break2",
-			"block/cobweb/break3",
-			"block/cobweb/break4",
-			"block/cobweb/break5",
-			"block/cobweb/break6"
+			"dig/cloth1",
+			"dig/cloth2",
+			"dig/cloth3",
+			"dig/cloth4"
 		],
 		"subtitle": "subtitles.entity.be_a_doll.doll.care.cloth"
 	},

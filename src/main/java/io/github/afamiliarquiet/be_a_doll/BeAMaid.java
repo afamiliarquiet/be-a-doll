@@ -9,21 +9,20 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class BeAMaid {
 	// to be completely honest, most of this is probably better suited to BeADoll in name
 	// but the problem is that i like my main initializer classes to be clean and tidy. so, maid here to help!
 
 	// id used for checking on things, map used for removing
-	public static final Identifier DOLLIFIED_MODIFIER_ID = BeADoll.id("dollified");
-	public static final HashMultimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> DOLL_MODIFICATIONS = HashMultimap.create();
+	public static final UUID DOLLIFIED_MODIFIER_ID = UUID.fromString("35114e62-2561-4e9a-9184-f1ddc0b9a3e0");
+	public static final HashMultimap<EntityAttribute, EntityAttributeModifier> DOLL_MODIFICATIONS = HashMultimap.create();
 	static {
-		DOLL_MODIFICATIONS.put(EntityAttributes.GENERIC_SCALE, new EntityAttributeModifier(DOLLIFIED_MODIFIER_ID, -0.7, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-		DOLL_MODIFICATIONS.put(EntityAttributes.GENERIC_MAX_HEALTH, new EntityAttributeModifier(DOLLIFIED_MODIFIER_ID, -0.6, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-		DOLL_MODIFICATIONS.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(DOLLIFIED_MODIFIER_ID, -0.8, EntityAttributeModifier.Operation.ADD_VALUE));
+		DOLL_MODIFICATIONS.put(EntityAttributes.GENERIC_MAX_HEALTH, new EntityAttributeModifier(DOLLIFIED_MODIFIER_ID, "dollified", -0.6, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+		DOLL_MODIFICATIONS.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(DOLLIFIED_MODIFIER_ID, "dollified",-0.8, EntityAttributeModifier.Operation.ADDITION));
 	}
 
 	public static void bestowApron() {
@@ -42,9 +41,9 @@ public class BeAMaid {
 
 		// if there's any signs of being a doll.... yep, that's a doll
 //		int dollPoints = 0;
-		for (RegistryEntry<EntityAttribute> attribute : DOLL_MODIFICATIONS.keySet()) {
+		for (EntityAttribute attribute : DOLL_MODIFICATIONS.keySet()) {
 			EntityAttributeInstance instance = player.getAttributes().getCustomInstance(attribute);
-			if (instance != null && instance.hasModifier(DOLLIFIED_MODIFIER_ID)) {
+			if (instance != null && instance.getModifier(DOLLIFIED_MODIFIER_ID) != null) {
 				return true;
 //				dollPoints++;
 			}
@@ -68,14 +67,18 @@ public class BeAMaid {
 			// add persistent instead of add temporary. because doll is a persistent fact of life
 			DOLL_MODIFICATIONS.forEach((attribute, modifier) -> {
 				EntityAttributeInstance instance = player.getAttributes().getCustomInstance(attribute);
-				if (instance != null && modifier != null && !instance.hasModifier(modifier.id())) {
+				if (instance != null && modifier != null && !instance.hasModifier(modifier)) {
 					instance.addPersistentModifier(modifier);
 				}
 			});
+			BeALibrarian.DOLL_SCALE_TYPE.getScaleData(player)
+					.setScale(0.3f);
 			BeALibrarian.reshapeDoll(player, variant);
 		} else {
 			BeALibrarian.repress(player);
-			player.removeStatusEffect(BeAWitch.CARED_FOR);
+			BeALibrarian.DOLL_SCALE_TYPE.getScaleData(player)
+				.setScale(1.0f);
+			player.removeStatusEffect(BeAWitch.CARED_FOR.value());
 			player.getAttributes().removeModifiers(DOLL_MODIFICATIONS);
 		}
 	}

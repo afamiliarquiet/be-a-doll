@@ -2,10 +2,11 @@
 loom = "1.10.+"
 minotaur = "2.+"
 
-mc = "1.21.1"
+mc = "1.20.1"
 fl = "0.16.14"
-yarn = "1.21.1+build.3"
-fapi = "0.115.6+1.21.1"
+yarn = "1.20.1+build.10"
+fapi = "0.92.7+1.20.1"
+pehkui = "3.7.9"
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }
@@ -16,3 +17,4 @@ mc = { group = "mojang", name = "minecraft", version.ref = "mc" }
 fl = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fl" }
 yarn = { group = "net.fabricmc", name = "yarn", version.ref = "yarn" }
 fapi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fapi" }
+pehkui = { group = "com.github.Virtuoel", name = "Pehkui", version.ref = "pehkui"}

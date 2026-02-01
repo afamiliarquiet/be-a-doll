@@ -1,6 +1,7 @@
 package io.github.afamiliarquiet.be_a_doll.mixin;
 
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
+import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import virtuoel.pehkui.api.ScaleData;
 
 // be informed: this mixin to add armor stand functionality to players is, unsurprisingly,
 // pretty much entirely a copy of ArmorStandEntity's interactAt code. that's it.
@@ -33,7 +35,7 @@ public abstract class DressUpDollEntityMixin {
 			} else {
 				EquipmentSlot preferredSlot = thisDoll.getPreferredEquipmentSlot(itemStack);
 				// because players don't normally get equipped i need to add this next line (player is missing some filters)
-				preferredSlot = preferredSlot != EquipmentSlot.BODY ? preferredSlot : EquipmentSlot.MAINHAND;
+				preferredSlot = preferredSlot != EquipmentSlot.CHEST ? preferredSlot : EquipmentSlot.MAINHAND;
 				if (itemStack.isEmpty()) {
 					EquipmentSlot aimedSlot = this.be_a_doll$getSlotFromPosition(thisDoll, hitPos);
 					if (thisDoll.hasStackEquipped(aimedSlot) && this.be_a_doll$equip(thisDoll, thatGrabbyPlayer, aimedSlot, itemStack, hand)) {
@@ -55,7 +57,8 @@ public abstract class DressUpDollEntityMixin {
 	@Unique
 	private EquipmentSlot be_a_doll$getSlotFromPosition(PlayerEntity thisDoll, Vec3d hitPos) {
 		EquipmentSlot chosenSlot = EquipmentSlot.MAINHAND;
-		double relativeAimedHeight = hitPos.y / (thisDoll.getScale() * thisDoll.getScaleFactor());
+		ScaleData scaleData = BeALibrarian.DOLL_SCALE_TYPE.getScaleData(thisDoll);
+		double relativeAimedHeight = hitPos.y / (scaleData.getScale() * thisDoll.getScaleFactor());
 
 		if (relativeAimedHeight >= 1.6 && thisDoll.hasStackEquipped(EquipmentSlot.HEAD)) {
 			chosenSlot = EquipmentSlot.HEAD;
@@ -76,7 +79,7 @@ public abstract class DressUpDollEntityMixin {
 	private boolean be_a_doll$equip(PlayerEntity thisDoll, PlayerEntity thatGrabbyPlayer, EquipmentSlot slot, ItemStack playerStack, Hand hand) {
 		ItemStack dollStack = thisDoll.getEquippedStack(slot);
 
-		if (thatGrabbyPlayer.isInCreativeMode() && dollStack.isEmpty() && !playerStack.isEmpty()) {
+		if (thatGrabbyPlayer.getAbilities().creativeMode && dollStack.isEmpty() && !playerStack.isEmpty()) {
 			thisDoll.equipStack(slot, playerStack.copyWithCount(1));
 			return true;
 		} else if (playerStack.isEmpty() || playerStack.getCount() <= 1) {

@@ -3,6 +3,7 @@ package io.github.afamiliarquiet.be_a_doll.effect;
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.player.HungerManager;
@@ -15,11 +16,11 @@ public class OverflowingStatusEffect extends StatusEffect {
 	}
 
 	public OverflowingStatusEffect(StatusEffectCategory category, int color, ParticleEffect particleEffect) {
-		super(category, color, particleEffect);
+		super(category, color);
 	}
 
 	@Override
-	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (entity instanceof PlayerEntity playerEntity) {
 			if (BeAMaid.isDoll(playerEntity)) { // dolls get a bit of repairs
 				HungerManager hungry = playerEntity.getHungerManager();
@@ -35,8 +36,6 @@ public class OverflowingStatusEffect extends StatusEffect {
 				entity.heal(0.5f);
 			}
 		}
-
-		return true;
 	}
 
 	@Override
@@ -46,8 +45,8 @@ public class OverflowingStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void onApplied(LivingEntity entity, int amplifier) {
-		BeAWitch.annihilate(entity, entity.getStatusEffect(BeAWitch.OVERFLOWING), entity.getStatusEffect(BeAWitch.FRAGMENTED));
-		super.onApplied(entity, amplifier);
+	public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
+		BeAWitch.annihilate(entity, entity.getStatusEffect(BeAWitch.OVERFLOWING.value()), entity.getStatusEffect(BeAWitch.FRAGMENTED.value()));
+		super.onApplied(entity, attributes, amplifier);
 	}
 }

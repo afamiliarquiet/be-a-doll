@@ -3,7 +3,6 @@ package io.github.afamiliarquiet.be_a_doll.mixin;
 import com.mojang.authlib.GameProfile;
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -27,8 +26,8 @@ public abstract class ThrowNameSelfServerPlayerEntityMixin extends PlayerEntity 
 	@Inject(method = "dropItem", at = @At("HEAD"), cancellable = true)
 	private void hehe(ItemStack stack, boolean dropAtSelf, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
 		// if a doll looks straight up and throws a name tag, they can write on their own tag!
-		if (this.getPitch() <= -88.5f && stack.isOf(Items.NAME_TAG) && BeAMaid.isDoll(this)) {
-			Text text = stack.get(DataComponentTypes.CUSTOM_NAME);
+		if (this.getPitch() <= -88.5f && stack.isOf(Items.NAME_TAG) && BeAMaid.isDoll(this) && stack.hasCustomName()) {
+			Text text = stack.getName();
 			if (text != null) {
 				if (this.isAlive()) {
 					BeALibrarian.relabelDoll(this, text);

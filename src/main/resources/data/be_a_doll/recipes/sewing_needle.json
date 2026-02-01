@@ -2,16 +2,15 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "equipment",
 	"key": {
-		"#": {"item": "minecraft:iron_nugget"},
-		"I": {"item": "minecraft:stick"}
+		"#": {"item": "minecraft:iron_nugget"}
 	},
 	"pattern": [
+		"  #",
 		" # ",
-		"###",
-		" I "
+		"#  "
 	],
 	"result": {
 		"count": 1,
-		"id": "be_a_doll:modeling_tool"
+		"item": "be_a_doll:sewing_needle"
 	}
 }

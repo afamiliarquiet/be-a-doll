@@ -1,12 +1,16 @@
 {
 	"required": true,
 	"package": "io.github.afamiliarquiet.be_a_doll.mixin",
-	"compatibilityLevel": "JAVA_21",
+	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+		"AnnihilateDollEffectsMixin",
+		"AnnihilateOtherEffectsMixin",
 		"DollNameTagItemMixin",
 		"DollToDollCommunicationPlayerManagerMixin",
 		"DressUpDollEntityMixin",
 		"FragmentedDamageLivingEntityMixin",
+		"NotifyOfDollMixin",
+		"SharpDollcraftToolsMixin",
 		"ThrowNameSelfServerPlayerEntityMixin",
 		"shoulder_riding.DollsMustDropServerPlayerEntityMixin",
 		"shoulder_riding.OopsDollDeletedYouPlayerManagerMixin",

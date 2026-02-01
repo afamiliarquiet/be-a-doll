@@ -38,11 +38,11 @@ public class BeADollthing {
 			} else {
 				keysmashedContent = server.getMessageDecorator().decorate(sender, Text.of(
 					syntheticKeysmashing(message.getSignedContent(), sender)
-				));
+				)).join();
 				dolledContent = server.getMessageDecorator().decorate(sender,
 					Text.literal(message.getSignedContent())
 						.styled(style -> style.withColor(0xbca1a0).withItalic(true))
-				);
+				).join();
 			}
 
 			SignedMessage keysmashedMessage = message.withUnsignedContent(keysmashedContent);

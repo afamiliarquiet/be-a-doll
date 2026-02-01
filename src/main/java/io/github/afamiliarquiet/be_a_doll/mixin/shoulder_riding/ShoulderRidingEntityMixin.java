@@ -4,26 +4,39 @@ import io.github.afamiliarquiet.be_a_doll.BeADecoration;
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class ShoulderRidingEntityMixin {
+	@Shadow
+	public abstract EntityDimensions getDimensions(EntityPose pose);
+
+	@Shadow
+	public abstract EntityPose getPose();
+
 	// `this` is the mount
-	@Inject(at = @At("HEAD"), method = "getPassengerAttachmentPos(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/EntityDimensions;F)Lnet/minecraft/util/math/Vec3d;", cancellable = true)
-	private void getDollSlot(Entity passenger, EntityDimensions dimensions, float scaleFactor, CallbackInfoReturnable<Vec3d> cir) {
+	@Inject(at = @At("HEAD"), method = "updatePassengerPosition(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity$PositionUpdater;)V", cancellable = true)
+	private void getDollSlot(Entity passenger, Entity.PositionUpdater positionUpdater, CallbackInfo ci) {
+		EntityDimensions dimensions = this.getDimensions(this.getPose());
+
 		// intellij please give up on this
 		//noinspection ConstantValue
 		if ((Object)this instanceof PlayerEntity playerMount && passenger instanceof PlayerEntity doll && BeAMaid.isDoll(doll)) {
-			Vec3d dollSlot = BeADecoration.getDollAttachmentPos(playerMount, doll, dimensions, scaleFactor);
+			// todo: use proper scale factor
+			Vec3d dollSlot = BeADecoration.getDollAttachmentPos(playerMount, doll, dimensions, 1.f);
 
 			if (dollSlot != null) {
-				cir.setReturnValue(dollSlot);
+				positionUpdater.accept(passenger, dollSlot.x, dollSlot.y, dollSlot.z);
+				ci.cancel();
 			}
 		}
 	}

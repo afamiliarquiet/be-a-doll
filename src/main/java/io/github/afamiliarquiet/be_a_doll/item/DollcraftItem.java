@@ -1,15 +1,18 @@
 package io.github.afamiliarquiet.be_a_doll.item;
 
+import com.google.common.collect.Multimap;
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import io.github.afamiliarquiet.be_a_doll.diary.BeABirdwatcher;
-import io.github.afamiliarquiet.be_a_doll.diary.BeACollector;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
 import io.github.afamiliarquiet.be_a_doll.letters.S2CDollRepairedLetter;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -33,8 +36,14 @@ import java.util.function.Predicate;
 public class DollcraftItem extends Item {
 	public static final int USE_COOLDOWN = 26;
 
-	public DollcraftItem(Settings settings) {
+	private final Multimap<EntityAttribute, EntityAttributeModifier> dollcraftAttributes;
+
+	private final BeADoll.Variant variant;
+
+	public DollcraftItem(Settings settings, Multimap<EntityAttribute, EntityAttributeModifier> dollcraftAttributes, BeADoll.Variant variant) {
 		super(settings);
+		this.dollcraftAttributes = dollcraftAttributes;
+		this.variant = variant;
 	}
 
 	// care for self
@@ -54,7 +63,7 @@ public class DollcraftItem extends Item {
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+	public int getMaxUseTime(ItemStack stack) {
 		return 62;
 	}
 
@@ -127,7 +136,7 @@ public class DollcraftItem extends Item {
 
 				caringIsCaring(doll);
 				material.split(1);
-				dollcraftStack.damage(1, user, LivingEntity.getSlotForHand(hand));
+				dollcraftStack.damage(1, user, stack -> user.sendToolBreakStatus(hand));
 				user.getItemCooldownManager().set(dollcraftStack.getItem(), USE_COOLDOWN);
 				return ActionResult.SUCCESS;
 			}
@@ -139,7 +148,7 @@ public class DollcraftItem extends Item {
 		// dolls get full saturation and some absorption every time because i love them (because they are love)
 		doll.playSound(BeABirdwatcher.CARE_COMPLETE, 1f, doll.getRandom().nextFloat() * 0.2f + 0.9f);
 		doll.getHungerManager().add(4, 5);
-		doll.addStatusEffect(new StatusEffectInstance(BeAWitch.CARED_FOR, -1, 2, false, false));
+		doll.addStatusEffect(new StatusEffectInstance(BeAWitch.CARED_FOR.value(), -1, 2, false, false));
 	}
 
 	public ItemStack findCareMaterial(PlayerEntity user, PlayerEntity doll) {
@@ -147,7 +156,7 @@ public class DollcraftItem extends Item {
 			return ItemStack.EMPTY;
 		}
 
-		if (user.isInCreativeMode() || user.getWorld().isClient() && !user.isMainPlayer()) { // otherclientplayers have no inv, so cheat for particles
+		if (user.getAbilities().creativeMode || user.getWorld().isClient() && !user.isMainPlayer()) { // otherclientplayers have no inv, so cheat for particles
 			return this.getVariant().getDefaultCareMaterial().getDefaultStack();
 		} else {
 			Predicate<ItemStack> predicate = stack -> stack.isIn(this.getVariant().getCareMaterialTag());
@@ -175,22 +184,27 @@ public class DollcraftItem extends Item {
 
 			Box dollHouse = doll.getBoundingBox();
 			Vec3d pos = new Vec3d(
-				doll.getRandom().nextDouble() * dollHouse.getLengthX(),
-				doll.getRandom().nextDouble() * dollHouse.getLengthY(),
-				doll.getRandom().nextDouble() * dollHouse.getLengthZ()
+				doll.getRandom().nextDouble() * dollHouse.getXLength(),
+				doll.getRandom().nextDouble() * dollHouse.getYLength(),
+				doll.getRandom().nextDouble() * dollHouse.getZLength()
 			);
-			pos = pos.add(dollHouse.getMinPos());
+			pos = pos.add(dollHouse.minX, dollHouse.minY, dollHouse.minZ);
 
 			doll.getWorld().addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, material), pos.x, pos.y, pos.z, vel.x, vel.y + 0.05, vel.z);
 		}
 	}
 
 	public BeADoll.Variant getVariant() {
-		return getComponents().getOrDefault(BeACollector.DOLL_VARIANT_COMPONENT, BeADoll.Variant.DEFAULT);
+		return this.variant;
 	}
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
 		return ingredient.isOf(Items.IRON_NUGGET); // hardcoded because backporting laziness
+	}
+
+	@Override
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+		return this.dollcraftAttributes != null && slot == EquipmentSlot.MAINHAND ? this.dollcraftAttributes : super.getAttributeModifiers(slot);
 	}
 }
