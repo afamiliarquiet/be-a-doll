@@ -4,6 +4,7 @@ import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -33,9 +34,7 @@ public abstract class DressUpDollEntityMixin {
 			} else if (thatGrabbyPlayer.getWorld().isClient) {
 				cir.setReturnValue(ActionResult.SUCCESS);
 			} else {
-				EquipmentSlot preferredSlot = thisDoll.getPreferredEquipmentSlot(itemStack);
-				// because players don't normally get equipped i need to add this next line (player is missing some filters)
-				preferredSlot = preferredSlot != EquipmentSlot.CHEST ? preferredSlot : EquipmentSlot.MAINHAND;
+				EquipmentSlot preferredSlot = LivingEntity.getPreferredEquipmentSlot(itemStack);
 				if (itemStack.isEmpty()) {
 					EquipmentSlot aimedSlot = this.be_a_doll$getSlotFromPosition(thisDoll, hitPos);
 					if (thisDoll.hasStackEquipped(aimedSlot) && this.be_a_doll$equip(thisDoll, thatGrabbyPlayer, aimedSlot, itemStack, hand)) {
