@@ -47,6 +47,7 @@ public abstract class NameablePlayerEntityRendererMixin extends LivingEntityRend
 					return;
 				} // else { defer to the grand elser }
 			} else {
+				matrixStack.pop();
 				return; // don't render if doll and not targeted
 			}
 		} // else { defer to the grand elser }
