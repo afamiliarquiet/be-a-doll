@@ -23,6 +23,15 @@ public abstract class ShoulderRidingEntityMixin {
 	@Shadow
 	public abstract EntityPose getPose();
 
+	@Shadow
+	public abstract double getX();
+
+	@Shadow
+	public abstract double getY();
+
+	@Shadow
+	public abstract double getZ();
+
 	// `this` is the mount
 	@Inject(at = @At("HEAD"), method = "updatePassengerPosition(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity$PositionUpdater;)V", cancellable = true)
 	private void getDollSlot(Entity passenger, Entity.PositionUpdater positionUpdater, CallbackInfo ci) {
@@ -35,7 +44,7 @@ public abstract class ShoulderRidingEntityMixin {
 			Vec3d dollSlot = BeADecoration.getDollAttachmentPos(playerMount, doll, dimensions, 1.f);
 
 			if (dollSlot != null) {
-				positionUpdater.accept(passenger, dollSlot.x, dollSlot.y, dollSlot.z);
+				positionUpdater.accept(passenger, this.getX() + dollSlot.x, this.getY() + dollSlot.y, this.getZ() + dollSlot.z);
 				ci.cancel();
 			}
 		}

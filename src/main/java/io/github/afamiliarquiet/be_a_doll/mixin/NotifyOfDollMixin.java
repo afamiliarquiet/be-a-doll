@@ -26,7 +26,7 @@ public class NotifyOfDollMixin {
 
 	@Inject(method = "startTracking", at = @At("RETURN"))
 	public void notifyPlayerIfDoll(ServerPlayerEntity player, CallbackInfo ci) {
-		// fabric's JOIN event runs before the client is aware of the entity,
+		// fabric's START_TRACKING event runs before the client is aware of the entity,
 		// meaning that entity-id-based synchronization wont work there
 		// so we have to do it here
 		if(this.entity instanceof PlayerEntity potentialDoll && BeAMaid.isDoll(potentialDoll)) {
