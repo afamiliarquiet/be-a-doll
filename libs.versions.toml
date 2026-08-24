@@ -4,7 +4,7 @@ minotaur = "2.+"
 
 mc = "1.21.8"
 fl = "0.17.2"
-yarn = "1.21.8+build.1"
+#yarn = "1.21.8+build.1"
 fapi = "0.130.0+1.21.8"
 
 [plugins]
@@ -14,5 +14,5 @@ minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 [libraries]
 mc = { group = "mojang", name = "minecraft", version.ref = "mc" }
 fl = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fl" }
-yarn = { group = "net.fabricmc", name = "yarn", version.ref = "yarn" }
+#yarn = { group = "net.fabricmc", name = "yarn", version.ref = "yarn" }
 fapi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fapi" }

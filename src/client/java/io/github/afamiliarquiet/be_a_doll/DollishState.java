@@ -1,6 +1,6 @@
 package io.github.afamiliarquiet.be_a_doll;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public interface DollishState {
 	void be_a_doll$setVariant(BeADoll.Variant variant);
@@ -9,6 +9,6 @@ public interface DollishState {
 	boolean be_a_doll$isDoll();
 	void be_a_doll$setTargeted(boolean targeted);
 	boolean be_a_doll$isTargeted();
-	void be_a_doll$setDollName(Text name);
-	Text be_a_doll$getDollName();
+	void be_a_doll$setDollName(Component name);
+	Component be_a_doll$getDollName();
 }

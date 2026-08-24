@@ -1,5 +1,5 @@
 accessWidener v2 named
 
-accessible class net/minecraft/entity/effect/AbsorptionStatusEffect
-accessible method net/minecraft/entity/effect/AbsorptionStatusEffect <init> (Lnet/minecraft/entity/effect/StatusEffectCategory;I)V
-accessible class net/minecraft/client/gui/hud/InGameHud$HeartType
+accessible class net/minecraft/world/effect/AbsorptionMobEffect
+accessible method net/minecraft/world/effect/AbsorptionMobEffect <init> (Lnet/minecraft/world/effect/MobEffectCategory;I)V
+accessible class net/minecraft/client/gui/Gui$HeartType

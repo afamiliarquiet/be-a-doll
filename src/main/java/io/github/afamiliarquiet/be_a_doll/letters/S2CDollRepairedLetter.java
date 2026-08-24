@@ -1,25 +1,26 @@
 package io.github.afamiliarquiet.be_a_doll.letters;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public record S2CDollRepairedLetter(int entityId, ItemStack material) implements CustomPayload {
-	public static final CustomPayload.Id<S2CDollRepairedLetter> ID = new CustomPayload.Id<>(BeADoll.id("doll_repaired_letter"));
+public record S2CDollRepairedLetter(int entityId, ItemStack material) implements CustomPacketPayload {
+	public static final CustomPacketPayload.Type<S2CDollRepairedLetter> ID = new CustomPacketPayload.Type<>(BeADoll.id("doll_repaired_letter"));
 
-	public static final PacketCodec<RegistryByteBuf, S2CDollRepairedLetter> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.INTEGER,
+	public static final StreamCodec<RegistryFriendlyByteBuf, S2CDollRepairedLetter> PACKET_CODEC = StreamCodec.composite(
+		ByteBufCodecs.INT,
 		S2CDollRepairedLetter::entityId,
-		ItemStack.PACKET_CODEC,
+		ItemStack.STREAM_CODEC,
 		S2CDollRepairedLetter::material,
 		S2CDollRepairedLetter::new
 	);
 
 	@Override
-	public Id<? extends CustomPayload> getId() {
+	public Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 }

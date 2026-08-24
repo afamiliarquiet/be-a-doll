@@ -1,10 +1,10 @@
 package io.github.afamiliarquiet.be_a_doll.diary;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.item.Item;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
 
 public class BeAResearcher {
 	public static final TagKey<DamageType> DOLL_IMMUNE = damage("doll_immune");
@@ -23,10 +23,10 @@ public class BeAResearcher {
 	}
 
 	public static TagKey<DamageType> damage(String thing) {
-		return TagKey.of(RegistryKeys.DAMAGE_TYPE, BeADoll.id(thing));
+		return TagKey.create(Registries.DAMAGE_TYPE, BeADoll.id(thing));
 	}
 
 	public static TagKey<Item> item(String thing) {
-		return TagKey.of(RegistryKeys.ITEM, BeADoll.id(thing));
+		return TagKey.create(Registries.ITEM, BeADoll.id(thing));
 	}
 }

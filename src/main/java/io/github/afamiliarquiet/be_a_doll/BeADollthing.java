@@ -7,12 +7,12 @@ import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import io.github.afamiliarquiet.be_a_doll.letters.C2SKeysmashConfigSyncLetter;
 import io.github.afamiliarquiet.be_a_doll.letters.IntraLibraryMessageCacheLetter;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.message.SentMessage;
-import net.minecraft.network.message.SignedMessage;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.OutgoingChatMessage;
+import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -24,29 +24,29 @@ public class BeADollthing {
 	// i should probably go learn about classloading.
 	// the original issue was that styledchat always has an override on chat messages
 	// then i think the issue with StyledChatUtils:modifyForSending() would be that maybeFormatFor always ignores unsigned content
-	public static void prepareMessageSending(SignedMessage message, ServerPlayerEntity sender, MinecraftServer server) {
+	public static void prepareMessageSending(PlayerChatMessage message, ServerPlayer sender, MinecraftServer server) {
 		if (sender != null) {
 			boolean hackTheStyles = FabricLoader.getInstance().isModLoaded("styledchat");
-			String keysmashed = syntheticKeysmashing(message.getSignedContent(), sender);
-			Text keysmashedContent;
-			Text dolledContent;
+			String keysmashed = syntheticKeysmashing(message.signedContent(), sender);
+			Component keysmashedContent;
+			Component dolledContent;
 
 			if (hackTheStyles) {
-				keysmashedContent = StyledChatUtils.formatFor(sender.getCommandSource(), keysmashed);
-				dolledContent = StyledChatUtils.formatFor(sender.getCommandSource(), message.getSignedContent())
-					.copy().styled(style -> style.withColor(0xbca1a0).withItalic(true));
+				keysmashedContent = StyledChatUtils.formatFor(sender.createCommandSourceStack(), keysmashed);
+				dolledContent = StyledChatUtils.formatFor(sender.createCommandSourceStack(), message.signedContent())
+					.copy().withStyle(style -> style.withColor(0xbca1a0).withItalic(true));
 			} else {
-				keysmashedContent = server.getMessageDecorator().decorate(sender, Text.of(
-					syntheticKeysmashing(message.getSignedContent(), sender)
+				keysmashedContent = server.getChatDecorator().decorate(sender, Component.nullToEmpty(
+					syntheticKeysmashing(message.signedContent(), sender)
 				));
-				dolledContent = server.getMessageDecorator().decorate(sender,
-					Text.literal(message.getSignedContent())
-						.styled(style -> style.withColor(0xbca1a0).withItalic(true))
+				dolledContent = server.getChatDecorator().decorate(sender,
+					Component.literal(message.signedContent())
+						.withStyle(style -> style.withColor(0xbca1a0).withItalic(true))
 				);
 			}
 
-			SignedMessage keysmashedMessage = message.withUnsignedContent(keysmashedContent);
-			SignedMessage dolledMessage = message.withUnsignedContent(dolledContent);
+			PlayerChatMessage keysmashedMessage = message.withUnsignedContent(keysmashedContent);
+			PlayerChatMessage dolledMessage = message.withUnsignedContent(dolledContent);
 
 			if (hackTheStyles) {
 				ExtSignedMessage.setArg(keysmashedMessage, "base_input", keysmashedContent);
@@ -59,8 +59,8 @@ public class BeADollthing {
 			BeALibrarian.filePaperwork(sender, new IntraLibraryMessageCacheLetter(
 				BeAMaid.isDoll(sender) && passwordManager.useKeysmashing(),
 				passwordManager.readableSelf(),
-				SentMessage.of(keysmashedMessage),
-				SentMessage.of(dolledMessage)
+				OutgoingChatMessage.create(keysmashedMessage),
+				OutgoingChatMessage.create(dolledMessage)
 			));
 		}
 	}
@@ -69,7 +69,7 @@ public class BeADollthing {
 		return syntheticKeysmashing(originalMessage, C2SKeysmashConfigSyncLetter.DEFAULT);
 	}
 
-	public static @NotNull String syntheticKeysmashing(@NotNull String originalMessage, @NotNull PlayerEntity keysmasher) {
+	public static @NotNull String syntheticKeysmashing(@NotNull String originalMessage, @NotNull Player keysmasher) {
 		return syntheticKeysmashing(originalMessage, BeALibrarian.checkFilesForPasswordManager(keysmasher));
 	}
 

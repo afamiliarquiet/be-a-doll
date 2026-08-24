@@ -1,11 +1,11 @@
 package io.github.afamiliarquiet.be_a_doll;
 
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Arm;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class BeADecoration {
@@ -27,16 +27,16 @@ public class BeADecoration {
 	// todone - check to see if dolls follow with teleport, and if not try to fix. (this was a problem for spectating) (seems fine?)
 	// todone - make locator bar not shiver in terror
 
-	public static int getParrotCount(PlayerEntity playerMount) {
+	public static int getParrotCount(Player playerMount) {
 		int parrots = 0;
 		if (!playerMount.getShoulderEntityLeft().isEmpty()) parrots++;
 		if (!playerMount.getShoulderEntityRight().isEmpty()) parrots++;
 		return parrots;
 	}
 
-	private static Arm getArm(PlayerEntity playerMount, PlayerEntity doll, int parrotCount) {
-		int passengerIndex = playerMount.getPassengerList().indexOf(doll);
-		Arm armToSitOn = playerMount.getMainArm().getOpposite();
+	private static HumanoidArm getArm(Player playerMount, Player doll, int parrotCount) {
+		int passengerIndex = playerMount.getPassengers().indexOf(doll);
+		HumanoidArm armToSitOn = playerMount.getMainArm().getOpposite();
 		if (passengerIndex == 1) {// second passenger
 			armToSitOn = armToSitOn.getOpposite();
 		}
@@ -44,63 +44,63 @@ public class BeADecoration {
 		if (parrotCount == 1) {
 			// force seat if parrot has the other. if there's two parrots and a doll is riding then things are already broken
 			if (!playerMount.getShoulderEntityLeft().isEmpty())
-				armToSitOn = Arm.RIGHT; // if left is occupied, has to be right
+				armToSitOn = HumanoidArm.RIGHT; // if left is occupied, has to be right
 			if (!playerMount.getShoulderEntityRight().isEmpty())
-				armToSitOn = Arm.LEFT; // if right is occupied, has to be right
+				armToSitOn = HumanoidArm.LEFT; // if right is occupied, has to be right
 		}
 		return armToSitOn;
 	}
 
 	// null return indicates mixin should not intervene
-	public static @Nullable Vec3d getDollAttachmentPos(PlayerEntity playerMount, PlayerEntity doll, EntityDimensions dimensions, float scaleFactor) {
+	public static @Nullable Vec3 getDollAttachmentPos(Player playerMount, Player doll, EntityDimensions dimensions, float scaleFactor) {
 		int parrotCount = getParrotCount(playerMount);
 		if (parrotCount > 1) {
 			return null; // secret third slot. head. this shouldn't happen, but if it does, head.
 		}
 
-		Arm armToSitOn = getArm(playerMount, doll, parrotCount);
-		Vec3d attachmentPos = new Vec3d((armToSitOn == Arm.LEFT ? 1 : -1) * 0.3625 * scaleFactor, dimensions.height(), 0);
+		HumanoidArm armToSitOn = getArm(playerMount, doll, parrotCount);
+		Vec3 attachmentPos = new Vec3((armToSitOn == HumanoidArm.LEFT ? 1 : -1) * 0.3625 * scaleFactor, dimensions.height(), 0);
 
 		switch (playerMount.getPose()) {
 			case CROUCHING:
-				attachmentPos = attachmentPos.add(new Vec3d(0, -0.025, 0).multiply(scaleFactor));
+				attachmentPos = attachmentPos.add(new Vec3(0, -0.025, 0).scale(scaleFactor));
 			case STANDING:
-				attachmentPos = attachmentPos.add(new Vec3d(0, - 0.425, 0.1).multiply(scaleFactor));
+				attachmentPos = attachmentPos.add(new Vec3(0, - 0.425, 0.1).scale(scaleFactor));
 				break;
 			case SLEEPING:
-				attachmentPos = attachmentPos.add(new Vec3d(0, -0.35, 0).multiply(scaleFactor));
+				attachmentPos = attachmentPos.add(new Vec3(0, -0.35, 0).scale(scaleFactor));
 				// preemptively un-rotate and then rotate to sleeping direction
-				Direction sleepingDirection = playerMount.getSleepingDirection();
+				Direction sleepingDirection = playerMount.getBedOrientation();
 				if (sleepingDirection != null) { // should always be true but i'm not the assertive type
-					attachmentPos = attachmentPos.rotateY(playerMount.bodyYaw * (float) (Math.PI / 180.0));
-					attachmentPos = attachmentPos.rotateY((sleepingDirection.getPositiveHorizontalDegrees() + 180) * (float) (Math.PI / 180.0));
+					attachmentPos = attachmentPos.yRot(playerMount.yBodyRot * (float) (Math.PI / 180.0));
+					attachmentPos = attachmentPos.yRot((sleepingDirection.toYRot() + 180) * (float) (Math.PI / 180.0));
 				}
 				break;
 			case SWIMMING:
-				attachmentPos = attachmentPos.add(new Vec3d(0, 0.15, -1).multiply(scaleFactor));
+				attachmentPos = attachmentPos.add(new Vec3(0, 0.15, -1).scale(scaleFactor));
 			case SPIN_ATTACK:
-			case GLIDING:
-				attachmentPos = attachmentPos.add(new Vec3d(0, -0.5, 1.5).multiply(scaleFactor));
-				attachmentPos = attachmentPos.rotateX(-playerMount.getPitch() * (float) (Math.PI / 180.0));
+			case FALL_FLYING:
+				attachmentPos = attachmentPos.add(new Vec3(0, -0.5, 1.5).scale(scaleFactor));
+				attachmentPos = attachmentPos.xRot(-playerMount.getXRot() * (float) (Math.PI / 180.0));
 				break;
 		}
 
-		return attachmentPos.rotateY(-playerMount.bodyYaw * (float) (Math.PI / 180.0));
+		return attachmentPos.yRot(-playerMount.yBodyRot * (float) (Math.PI / 180.0));
 	}
 
-	public static boolean canAddPassenger(PlayerEntity playerMount, PlayerEntity doll) {
+	public static boolean canAddPassenger(Player playerMount, Player doll) {
 		int freeSlots = 2;
 		freeSlots -= getParrotCount(playerMount);
-		freeSlots -= playerMount.getPassengerList().size();
+		freeSlots -= playerMount.getPassengers().size();
 		return freeSlots > 0 && doll.getScale() / playerMount.getScale() <= 0.31;
 	}
 
-	public static Vec3d updatePassengerForDismount(PlayerEntity playerMount, PlayerEntity doll) {
-		return new Vec3d(doll.getX(), playerMount.getBoundingBox().minY, doll.getZ());
+	public static Vec3 updatePassengerForDismount(Player playerMount, Player doll) {
+		return new Vec3(doll.getX(), playerMount.getBoundingBox().minY, doll.getZ());
 	}
 
-	public static boolean shoulderEntityIsEmpty(LivingEntity playerMountTrustMe, boolean parrotsEmpty, Arm testArm) {
-		int likelyDollCount = playerMountTrustMe.getPlayerPassengers();
+	public static boolean shoulderEntityIsEmpty(LivingEntity playerMountTrustMe, boolean parrotsEmpty, HumanoidArm testArm) {
+		int likelyDollCount = playerMountTrustMe.countPlayerPassengers();
 		boolean dollsEmpty = true;
 
 		if (likelyDollCount > 1) {

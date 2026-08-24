@@ -11,17 +11,17 @@ import io.github.afamiliarquiet.be_a_doll.diary.BeAResearcher;
 import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.ByIdMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +46,8 @@ public class BeADoll implements ModInitializer {
 		BeACurator.payAVisit(); // this isn't necessary but it's cute
 	}
 
-	public static Identifier id(String thing) {
-		return Identifier.of(MOD_ID, thing);
+	public static ResourceLocation id(String thing) {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, thing);
 	}
 
 	// probably a good habit to always log my id whenever i'm throwing things in the log, even if it's just a quick test
@@ -60,11 +60,11 @@ public class BeADoll implements ModInitializer {
 	}
 
 	// todo - turn this into interface/abstract w/ a registry
-	public enum Variant implements StringIdentifiable {
+	public enum Variant implements StringRepresentable {
 		REPRESSED(0, "player",
 			ItemTags.ANVIL, Items.ANVIL,
-			SoundEvents.BLOCK_ANVIL_FALL,
-			Identifier.of("missing", "texture"), Identifier.of("missing", "texture"), Identifier.of("missing", "texture")), // gonna look really silly in your throat.
+			SoundEvents.ANVIL_FALL,
+			ResourceLocation.fromNamespaceAndPath("missing", "texture"), ResourceLocation.fromNamespaceAndPath("missing", "texture"), ResourceLocation.fromNamespaceAndPath("missing", "texture")), // gonna look really silly in your throat.
 		WOODEN(1, "wooden",
 			BeAResearcher.WOODEN_DOLL_CARE_MATERIALS, Items.STICK,
 			BeABirdwatcher.CARE_WOODEN,
@@ -87,21 +87,21 @@ public class BeADoll implements ModInitializer {
 			BeACurator.CLOCKWORK_FOOD_EMPTY, BeACurator.CLOCKWORK_FOOD_HALF, BeACurator.CLOCKWORK_FOOD_FULL);
 
 		public static final BeADoll.Variant DEFAULT = WOODEN;
-		public static final StringIdentifiable.EnumCodec<BeADoll.Variant> CODEC = StringIdentifiable.createCodec(BeADoll.Variant::values);
-		private static final IntFunction<BeADoll.Variant> INDEX_MAPPER = ValueLists.createIndexToValueFunction(
-			BeADoll.Variant::getIndex, values(), ValueLists.OutOfBoundsHandling.ZERO
+		public static final StringRepresentable.EnumCodec<BeADoll.Variant> CODEC = StringRepresentable.fromEnum(BeADoll.Variant::values);
+		private static final IntFunction<BeADoll.Variant> INDEX_MAPPER = ByIdMap.continuous(
+			BeADoll.Variant::getIndex, values(), ByIdMap.OutOfBoundsStrategy.ZERO
 		);
-		public static final PacketCodec<ByteBuf, BeADoll.Variant> PACKET_CODEC = PacketCodecs.indexed(INDEX_MAPPER, BeADoll.Variant::getIndex);
+		public static final StreamCodec<ByteBuf, BeADoll.Variant> PACKET_CODEC = ByteBufCodecs.idMapper(INDEX_MAPPER, BeADoll.Variant::getIndex);
 		private final int index;
 		private final String id;
 		private final TagKey<Item> careMaterial;
 		private final Item defaultCareMaterial;
 		private final SoundEvent careSound;
-		private final Identifier foodSpriteEmpty;
-		private final Identifier foodSpriteHalf;
-		private final Identifier foodSpritFull;
+		private final ResourceLocation foodSpriteEmpty;
+		private final ResourceLocation foodSpriteHalf;
+		private final ResourceLocation foodSpritFull;
 
-		Variant(final int index, final String id, TagKey<Item> careMaterial, Item defaultCareMaterial, SoundEvent careSound, Identifier foodSpriteEmpty, Identifier foodSpriteHalf, Identifier foodSpritFull) {
+		Variant(final int index, final String id, TagKey<Item> careMaterial, Item defaultCareMaterial, SoundEvent careSound, ResourceLocation foodSpriteEmpty, ResourceLocation foodSpriteHalf, ResourceLocation foodSpritFull) {
 			this.index = index;
 			this.id = id;
 			this.careMaterial = careMaterial;
@@ -121,7 +121,7 @@ public class BeADoll implements ModInitializer {
 		}
 
 		@Override
-		public String asString() {
+		public String getSerializedName() {
 			return this.id;
 		}
 
@@ -141,15 +141,15 @@ public class BeADoll implements ModInitializer {
 			return defaultCareMaterial;
 		}
 
-		public Identifier getFoodSpriteEmpty() {
+		public ResourceLocation getFoodSpriteEmpty() {
 			return foodSpriteEmpty;
 		}
 
-		public Identifier getFoodSpriteHalf() {
+		public ResourceLocation getFoodSpriteHalf() {
 			return foodSpriteHalf;
 		}
 
-		public Identifier getFoodSpritFull() {
+		public ResourceLocation getFoodSpritFull() {
 			return foodSpritFull;
 		}
 	}

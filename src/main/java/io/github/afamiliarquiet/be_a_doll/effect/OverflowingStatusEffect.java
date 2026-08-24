@@ -2,32 +2,32 @@ package io.github.afamiliarquiet.be_a_doll.effect;
 
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.player.HungerManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.food.FoodData;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.server.level.ServerLevel;
 
-public class OverflowingStatusEffect extends StatusEffect {
-	public OverflowingStatusEffect(StatusEffectCategory category, int color) {
+public class OverflowingStatusEffect extends MobEffect {
+	public OverflowingStatusEffect(MobEffectCategory category, int color) {
 		super(category, color);
 	}
 
-	public OverflowingStatusEffect(StatusEffectCategory category, int color, ParticleEffect particleEffect) {
+	public OverflowingStatusEffect(MobEffectCategory category, int color, ParticleOptions particleEffect) {
 		super(category, color, particleEffect);
 	}
 
 	@Override
-	public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
-		if (entity instanceof PlayerEntity playerEntity) {
+	public boolean applyEffectTick(ServerLevel world, LivingEntity entity, int amplifier) {
+		if (entity instanceof Player playerEntity) {
 			if (BeAMaid.isDoll(playerEntity)) { // dolls get a bit of repairs
-				HungerManager hungry = playerEntity.getHungerManager();
-				if (hungry.isNotFull()) {
-					hungry.add(1, 0f);
+				FoodData hungry = playerEntity.getFoodData();
+				if (hungry.needsFood()) {
+					hungry.eat(1, 0f);
 				} else {
-					hungry.add(1, 1f);
+					hungry.eat(1, 1f);
 				}
 			}
 
@@ -41,14 +41,14 @@ public class OverflowingStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public boolean canApplyUpdateEffect(int duration, int amplifier) {
+	public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
 		int i = 50 >> amplifier;
 		return i == 0 || duration % i == 0;
 	}
 
 	@Override
-	public void onApplied(LivingEntity entity, int amplifier) {
-		BeAWitch.annihilate(entity, entity.getStatusEffect(BeAWitch.OVERFLOWING), entity.getStatusEffect(BeAWitch.FRAGMENTED));
-		super.onApplied(entity, amplifier);
+	public void onEffectStarted(LivingEntity entity, int amplifier) {
+		BeAWitch.annihilate(entity, entity.getEffect(BeAWitch.OVERFLOWING), entity.getEffect(BeAWitch.FRAGMENTED));
+		super.onEffectStarted(entity, amplifier);
 	}
 }

@@ -2,13 +2,13 @@ package io.github.afamiliarquiet.be_a_doll.mixin.client;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.DollishState;
-import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.text.Text;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(PlayerEntityRenderState.class)
-public class DollishPlayerEntityRenderStateMixin implements DollishState {
+@Mixin(PlayerRenderState.class)
+public class DollishPlayerRenderStateMixin implements DollishState {
 	@Unique
 	private BeADoll.Variant be_a_doll$variant = BeADoll.Variant.DEFAULT;
 	@Unique
@@ -16,7 +16,7 @@ public class DollishPlayerEntityRenderStateMixin implements DollishState {
 	@Unique
 	private boolean be_a_doll$targeted = false;
 	@Unique
-	private Text be_a_doll$dollName = null;
+	private Component be_a_doll$dollName = null;
 
 	@Override
 	public void be_a_doll$setVariant(BeADoll.Variant variant) {
@@ -49,12 +49,12 @@ public class DollishPlayerEntityRenderStateMixin implements DollishState {
 	}
 
 	@Override
-	public void be_a_doll$setDollName(Text name) {
+	public void be_a_doll$setDollName(Component name) {
 		this.be_a_doll$dollName = name;
 	}
 
 	@Override
-	public Text be_a_doll$getDollName() {
+	public Component be_a_doll$getDollName() {
 		return this.be_a_doll$dollName;
 	}
 }

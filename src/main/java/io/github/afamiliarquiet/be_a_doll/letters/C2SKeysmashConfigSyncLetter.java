@@ -4,25 +4,26 @@ import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 
-public record C2SKeysmashConfigSyncLetter(boolean useKeysmashing, boolean readableSelf, boolean readableOthers, String letterPoolOverride, float restockThreshold, boolean useOrderedSpooling, float baseClarityChance, float startingClarityScore, float keysmashedMultiplier, float spokenLoudlyClarity, float nonletterClarity) implements CustomPayload {
-	public static final Id<C2SKeysmashConfigSyncLetter> ID = new Id<>(BeADoll.id("keysmash_config_letter"));
+public record C2SKeysmashConfigSyncLetter(boolean useKeysmashing, boolean readableSelf, boolean readableOthers, String letterPoolOverride, float restockThreshold, boolean useOrderedSpooling, float baseClarityChance, float startingClarityScore, float keysmashedMultiplier, float spokenLoudlyClarity, float nonletterClarity) implements CustomPacketPayload {
+	public static final Type<C2SKeysmashConfigSyncLetter> ID = new Type<>(BeADoll.id("keysmash_config_letter"));
 
-	public static final PacketCodec<ByteBuf, C2SKeysmashConfigSyncLetter> PACKET_CODEC = PacketCodec.tuple(
-		PacketCodecs.BOOLEAN, C2SKeysmashConfigSyncLetter::useKeysmashing,
-		PacketCodecs.BOOLEAN, C2SKeysmashConfigSyncLetter::readableSelf,
-		PacketCodecs.BOOLEAN, C2SKeysmashConfigSyncLetter::readableOthers,
-		PacketCodecs.STRING, C2SKeysmashConfigSyncLetter::letterPoolOverride,
-		PacketCodecs.FLOAT, C2SKeysmashConfigSyncLetter::restockThreshold,
-		PacketCodecs.BOOLEAN, C2SKeysmashConfigSyncLetter::useOrderedSpooling,
-		PacketCodecs.FLOAT, C2SKeysmashConfigSyncLetter::baseClarityChance,
-		PacketCodecs.FLOAT, C2SKeysmashConfigSyncLetter::startingClarityScore,
-		PacketCodecs.FLOAT, C2SKeysmashConfigSyncLetter::keysmashedMultiplier,
-		PacketCodecs.FLOAT, C2SKeysmashConfigSyncLetter::spokenLoudlyClarity,
-		PacketCodecs.FLOAT, C2SKeysmashConfigSyncLetter::nonletterClarity,
+	public static final StreamCodec<ByteBuf, C2SKeysmashConfigSyncLetter> PACKET_CODEC = StreamCodec.composite(
+		ByteBufCodecs.BOOL, C2SKeysmashConfigSyncLetter::useKeysmashing,
+		ByteBufCodecs.BOOL, C2SKeysmashConfigSyncLetter::readableSelf,
+		ByteBufCodecs.BOOL, C2SKeysmashConfigSyncLetter::readableOthers,
+		ByteBufCodecs.STRING_UTF8, C2SKeysmashConfigSyncLetter::letterPoolOverride,
+		ByteBufCodecs.FLOAT, C2SKeysmashConfigSyncLetter::restockThreshold,
+		ByteBufCodecs.BOOL, C2SKeysmashConfigSyncLetter::useOrderedSpooling,
+		ByteBufCodecs.FLOAT, C2SKeysmashConfigSyncLetter::baseClarityChance,
+		ByteBufCodecs.FLOAT, C2SKeysmashConfigSyncLetter::startingClarityScore,
+		ByteBufCodecs.FLOAT, C2SKeysmashConfigSyncLetter::keysmashedMultiplier,
+		ByteBufCodecs.FLOAT, C2SKeysmashConfigSyncLetter::spokenLoudlyClarity,
+		ByteBufCodecs.FLOAT, C2SKeysmashConfigSyncLetter::nonletterClarity,
 		C2SKeysmashConfigSyncLetter::new
 	);
 
@@ -34,7 +35,7 @@ public record C2SKeysmashConfigSyncLetter(boolean useKeysmashing, boolean readab
 	}
 
 	@Override
-	public Id<? extends CustomPayload> getId() {
+	public Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 }

@@ -1,51 +1,51 @@
 package io.github.afamiliarquiet.be_a_doll.diary;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.level.Level;
 
 public class BeACook {
 	// this can probably? move with the recipe if it ever moves
-	public static final RecipeSerializer<EssenceArtistryRecipe> ESSENCE_ARTISTRY_SERIALIZER = Registry.register(Registries.RECIPE_SERIALIZER, BeADoll.id("crafting_special_essenceartistry"), new SpecialCraftingRecipe.SpecialRecipeSerializer<>(EssenceArtistryRecipe::new));
+	public static final RecipeSerializer<EssenceArtistryRecipe> ESSENCE_ARTISTRY_SERIALIZER = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, BeADoll.id("crafting_special_essenceartistry"), new CustomRecipe.Serializer<>(EssenceArtistryRecipe::new));
 
 	public static void placeOrders() {
 		// hi im here to alter your essence. what can i get for you today?
 	}
 
 	// i'll move it out if i make another, same as pen pal
-	public static class EssenceArtistryRecipe extends SpecialCraftingRecipe {
+	public static class EssenceArtistryRecipe extends CustomRecipe {
 
-		public EssenceArtistryRecipe(CraftingRecipeCategory category) {
+		public EssenceArtistryRecipe(CraftingBookCategory category) {
 			super(category);
 		}
 
 		@Override
-		public boolean matches(CraftingRecipeInput input, World world) {
-			if (input.getStackCount() != 2) {
+		public boolean matches(CraftingInput input, Level world) {
+			if (input.ingredientCount() != 2) {
 				return false;
 			} else {
 				boolean hasOneEssenceFragment = false;
 				boolean hasOneDollcraftItem = false;
 
 				for (int i = 0; i < input.size(); i++) {
-					ItemStack current = input.getStackInSlot(i);
+					ItemStack current = input.getItem(i);
 					if (!current.isEmpty()) {
-						if (current.isIn(BeAResearcher.DOLLCRAFT_ITEMS) || current.isOf(Items.DIAMOND_PICKAXE)) {
+						if (current.is(BeAResearcher.DOLLCRAFT_ITEMS) || current.is(Items.DIAMOND_PICKAXE)) {
 							if (hasOneDollcraftItem) {
 								return false;
 							}
 
 							hasOneDollcraftItem = true;
-						} else if (current.isOf(BeACollector.ESSENCE_FRAGMENT)) {
+						} else if (current.is(BeACollector.ESSENCE_FRAGMENT)) {
 							if (hasOneEssenceFragment) {
 								return false;
 							}
@@ -63,20 +63,20 @@ public class BeACook {
 		}
 
 		@Override
-		public ItemStack craft(CraftingRecipeInput input, RegistryWrapper.WrapperLookup registries) {
+		public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
 			BeADoll.Variant dollVariant = null;
 			ItemStack essenceFragment = ItemStack.EMPTY;
 
 			for (int i = 0; i < input.size(); i++) {
-				ItemStack current = input.getStackInSlot(i);
+				ItemStack current = input.getItem(i);
 				if (!current.isEmpty()) {
-					if (current.isOf(BeACollector.ESSENCE_FRAGMENT)) {
+					if (current.is(BeACollector.ESSENCE_FRAGMENT)) {
 						if (!essenceFragment.isEmpty()) { // no mass fabrication, one at a time
 							return ItemStack.EMPTY;
 						}
 
 						essenceFragment = current;
-					} else if (current.isOf(Items.DIAMOND_PICKAXE)) {
+					} else if (current.is(Items.DIAMOND_PICKAXE)) {
 						if (dollVariant != null) {
 							return ItemStack.EMPTY;
 						}
@@ -105,15 +105,15 @@ public class BeACook {
 		}
 
 		@Override
-		public DefaultedList<ItemStack> getRecipeRemainders(CraftingRecipeInput input) {
-			DefaultedList<ItemStack> remainders = DefaultedList.ofSize(input.size(), ItemStack.EMPTY);
+		public NonNullList<ItemStack> getRemainingItems(CraftingInput input) {
+			NonNullList<ItemStack> remainders = NonNullList.withSize(input.size(), ItemStack.EMPTY);
 
 			for (int i = 0; i < remainders.size(); i++) {
-				ItemStack current = input.getStackInSlot(i);
-				ItemStack weirdAndUnlikelyRemainder = current.getItem().getRecipeRemainder();
+				ItemStack current = input.getItem(i);
+				ItemStack weirdAndUnlikelyRemainder = current.getItem().getCraftingRemainder();
 				if (!weirdAndUnlikelyRemainder.isEmpty()) {
 					remainders.set(i, weirdAndUnlikelyRemainder);
-				} else if (current.isIn(BeAResearcher.DOLLCRAFT_ITEMS) || current.isOf(Items.DIAMOND_PICKAXE)) {
+				} else if (current.is(BeAResearcher.DOLLCRAFT_ITEMS) || current.is(Items.DIAMOND_PICKAXE)) {
 					remainders.set(i, current.copyWithCount(1));
 					break;
 				}
@@ -123,7 +123,7 @@ public class BeACook {
 		}
 
 		@Override
-		public RecipeSerializer<? extends SpecialCraftingRecipe> getSerializer() {
+		public RecipeSerializer<? extends CustomRecipe> getSerializer() {
 			return BeACook.ESSENCE_ARTISTRY_SERIALIZER;
 		}
 	}

@@ -3,13 +3,13 @@
   "package": "io.github.afamiliarquiet.be_a_doll.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "DollishPlayerEntityRenderStateMixin",
+    "DollishPlayerRenderStateMixin",
     "DollReadableNameLivingEntityRendererMixin",
-    "DollRetexturedInGameHudMixin",
-    "DollsNeedNoAirInGameHudMixin",
-    "IgnorePassengersLocatorBarMixin",
-	  "NameablePlayerEntityRendererMixin",
-    "SelfCreativeInventoryScreenMixin",
+    "DollRetexturedGuiMixin",
+    "DollsNeedNoAirGuiMixin",
+    "IgnorePassengersLocatorBarRendererMixin",
+    "NameablePlayerRendererMixin",
+    "SelfCreativeModeInventoryScreenMixin",
     "SelfInventoryScreenMixin"
   ],
   "injectors": {

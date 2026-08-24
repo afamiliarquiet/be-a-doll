@@ -2,14 +2,14 @@ package io.github.afamiliarquiet.be_a_doll.mixin;
 
 import io.github.afamiliarquiet.be_a_doll.BeAMaid;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.NameTagItem;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.NameTagItem;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,17 +17,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NameTagItem.class)
 public class DollNameTagItemMixin {
-	@Inject(at = @At("HEAD"), method = "useOnEntity", cancellable = true)
-	private void useOnDoll(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-		if (entity instanceof PlayerEntity doll && BeAMaid.isDoll(doll)) {
-			Text text = stack.get(DataComponentTypes.CUSTOM_NAME);
+	@Inject(at = @At("HEAD"), method = "interactLivingEntity", cancellable = true)
+	private void useOnDoll(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+		if (entity instanceof Player doll && BeAMaid.isDoll(doll)) {
+			Component text = stack.get(DataComponents.CUSTOM_NAME);
 			if (text != null) {
-				if (!user.getWorld().isClient && entity.isAlive()) {
+				if (!user.level().isClientSide && entity.isAlive()) {
 					BeALibrarian.relabelDoll(doll, text);
-					stack.decrement(1);
+					stack.shrink(1);
 				}
 
-				cir.setReturnValue(ActionResult.SUCCESS);
+				cir.setReturnValue(InteractionResult.SUCCESS);
 			}
 		}
 	}

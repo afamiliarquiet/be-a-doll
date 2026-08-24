@@ -4,18 +4,18 @@ import io.github.afamiliarquiet.be_a_doll.diary.BeABirdwatcher;
 import io.github.afamiliarquiet.be_a_doll.diary.BeACollector;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.Nullable;
 
 public class BeASelf {
 	// todone - make more mixins where player is rendered, like creative inv and horse i think
 	// nevermind not doing horse it'd be annoying to do it there and there's no need to play w/ essence on a horse
-	public static @Nullable ItemStack clickSelf(ItemStack cursorStack, PlayerEntity player, boolean inserting) {
+	public static @Nullable ItemStack clickSelf(ItemStack cursorStack, Player player, boolean inserting) {
 		if (inserting) {
-			if (cursorStack.isOf(BeACollector.ESSENCE_FRAGMENT)) {
+			if (cursorStack.is(BeACollector.ESSENCE_FRAGMENT)) {
 				BeADoll.Variant variant = cursorStack.get(BeACollector.DOLL_VARIANT_COMPONENT);
 				if (variant != null) {
 					doEssencePlaceEffects(player, variant);
@@ -25,7 +25,7 @@ public class BeASelf {
 		} else {
 			if (cursorStack.isEmpty()) {
 				doEssenceTakeEffects(player);
-				ItemStack fragment = BeACollector.ESSENCE_FRAGMENT.getDefaultStack();
+				ItemStack fragment = BeACollector.ESSENCE_FRAGMENT.getDefaultInstance();
 				fragment.set(BeACollector.DOLL_VARIANT_COMPONENT, BeALibrarian.inspectSupposedPlayer(player));
 				return fragment;
 			}
@@ -35,22 +35,22 @@ public class BeASelf {
 		return null;
 	}
 
-	private static void doEssencePlaceEffects(PlayerEntity player, BeADoll.Variant variant) {
-		player.addStatusEffect(new StatusEffectInstance(BeAWitch.OVERFLOWING, 300, 1));
-		player.getWorld().playSoundClient(BeABirdwatcher.ESSENCE_PLACE, SoundCategory.PLAYERS, 1f, player.getRandom().nextFloat() * 0.2f + 0.9f);
-		if (!player.getWorld().isClient()) {
+	private static void doEssencePlaceEffects(Player player, BeADoll.Variant variant) {
+		player.addEffect(new MobEffectInstance(BeAWitch.OVERFLOWING, 300, 1));
+		player.level().playPlayerSound(BeABirdwatcher.ESSENCE_PLACE, SoundSource.PLAYERS, 1f, player.getRandom().nextFloat() * 0.2f + 0.9f);
+		if (!player.level().isClientSide()) {
 			BeAMaid.setDoll(player, variant);
 		}
 	}
 
-	private static void doEssenceTakeEffects(PlayerEntity player) {
-		StatusEffectInstance fragmentation = player.getStatusEffect(BeAWitch.FRAGMENTED);
-		player.addStatusEffect(new StatusEffectInstance(
+	private static void doEssenceTakeEffects(Player player) {
+		MobEffectInstance fragmentation = player.getEffect(BeAWitch.FRAGMENTED);
+		player.addEffect(new MobEffectInstance(
 			BeAWitch.FRAGMENTED,
 			1200 + (fragmentation != null ? fragmentation.getDuration() : 0),
 			(fragmentation != null ? fragmentation.getAmplifier() + 1 : 0)
 		));
-		player.getWorld().playSoundClient(BeABirdwatcher.ESSENCE_TAKE, SoundCategory.PLAYERS, 1f, player.getRandom().nextFloat() * 0.2f + 0.9f);
+		player.level().playPlayerSound(BeABirdwatcher.ESSENCE_TAKE, SoundSource.PLAYERS, 1f, player.getRandom().nextFloat() * 0.2f + 0.9f);
 	}
 
 	public static boolean isMouseInSurvivalSelf(double mouseX, double mouseY, int screenX, int screenY) {
