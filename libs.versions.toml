@@ -1,18 +1,16 @@
 [versions]
-loom = "1.10.+"
+loom = "1.17-SNAPSHOT"
 minotaur = "2.+"
 
-mc = "1.21.8"
-fl = "0.17.2"
-#yarn = "1.21.8+build.1"
-fapi = "0.130.0+1.21.8"
+mc = "26.1.2"
+fl = "0.19.3"
+fapi = "0.155.2+26.1.2"
 
 [plugins]
-loom = { id = "fabric-loom", version.ref = "loom" }
+loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
 minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 
 [libraries]
 mc = { group = "mojang", name = "minecraft", version.ref = "mc" }
 fl = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fl" }
-#yarn = { group = "net.fabricmc", name = "yarn", version.ref = "yarn" }
 fapi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fapi" }

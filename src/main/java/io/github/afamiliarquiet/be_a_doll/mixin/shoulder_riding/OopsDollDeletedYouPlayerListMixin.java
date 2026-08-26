@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(PlayerList.class)
 public class OopsDollDeletedYouPlayerListMixin {
 	@ModifyExpressionValue(method = "remove", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hasExactlyOnePlayerPassenger()Z"))
-	private boolean waitWaitStopDontRemoveThatPlayer(boolean original, @Local(argsOnly = true) ServerPlayer disconnected, @Local Entity entity) {
-		return original && entity.getPassengersAndSelf().noneMatch(current -> current != null && current.isAlwaysTicking() && current != disconnected);
+	private boolean waitWaitStopDontRemoveThatPlayer(boolean original, @Local(argsOnly = true, name = "player") ServerPlayer player, @Local(name = "vehicle") Entity vehicle) {
+		return original && vehicle.getPassengersAndSelf().noneMatch(current -> current.isAlwaysTicking() && current != player);
 	}
 }

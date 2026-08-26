@@ -15,13 +15,11 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Item.class)
 public class ActuallyDollsCanPretendToEatItemMixin {
-	// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
-// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
     @Definition(id = "getConsumeTicks", method = "Lnet/minecraft/world/item/component/Consumable;consumeTicks()I")
 	@Expression("?.getConsumeTicks()")
 	@ModifyExpressionValue(method = "getUseDuration", at = @At("MIXINEXTRAS:EXPRESSION"))
-	private int slowlyNibbling(int original, @Local(argsOnly = true, ordinal = 0) ItemStack stack, @Local(argsOnly = true, ordinal = 0) LivingEntity user) {
-		if (stack.get(DataComponents.FOOD) != null && user instanceof Player player && BeAMaid.isDoll(player)) {
+	private int slowlyNibbling(int original, @Local(argsOnly = true, name = "itemStack") ItemStack itemStack, @Local(argsOnly = true, name = "user") LivingEntity user) {
+		if (itemStack.get(DataComponents.FOOD) != null && user instanceof Player player && BeAMaid.isDoll(player)) {
 			// note the magic number 3
 			return original * 3;
 		} else {

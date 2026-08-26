@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(ItemStack.class)
 public abstract class AwardWinningFoodActorItemStackMixin implements DataComponentHolder {
 	@ModifyArg(method = "onUseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/component/Consumable;shouldEmitParticlesAndSounds(I)Z"), index = 0)
-	private int spitOutAsMuchAsPossible(int remainingUseTicks, @Local(argsOnly = true, ordinal = 0) LivingEntity user) {
-		if (get(DataComponents.FOOD) != null && user instanceof Player dollODoll && BeAMaid.isDoll(dollODoll)) {
+	private int spitOutAsMuchAsPossible(int remainingUseTicks, @Local(argsOnly = true, name = "livingEntity") LivingEntity livingEntity) {
+		if (get(DataComponents.FOOD) != null && livingEntity instanceof Player dollODoll && BeAMaid.isDoll(dollODoll)) {
 			// preserve the % 4 but otherwise compress to typical
 			// note the magic number 3
 			int compensated = remainingUseTicks / 3;

@@ -19,9 +19,10 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.ByIdMap;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +47,8 @@ public class BeADoll implements ModInitializer {
 		BeACurator.payAVisit(); // this isn't necessary but it's cute
 	}
 
-	public static ResourceLocation id(String thing) {
-		return ResourceLocation.fromNamespaceAndPath(MOD_ID, thing);
+	public static Identifier id(String thing) {
+		return Identifier.fromNamespaceAndPath(MOD_ID, thing);
 	}
 
 	// probably a good habit to always log my id whenever i'm throwing things in the log, even if it's just a quick test
@@ -55,6 +56,7 @@ public class BeADoll implements ModInitializer {
 		LOGGER.info("[Be a doll!] {}", message);
 	}
 
+	@SuppressWarnings("unused")
 	public static void warn(String message) {
 		LOGGER.warn("[Would you be a doll?] {}", message);
 	}
@@ -64,7 +66,7 @@ public class BeADoll implements ModInitializer {
 		REPRESSED(0, "player",
 			ItemTags.ANVIL, Items.ANVIL,
 			SoundEvents.ANVIL_FALL,
-			ResourceLocation.fromNamespaceAndPath("missing", "texture"), ResourceLocation.fromNamespaceAndPath("missing", "texture"), ResourceLocation.fromNamespaceAndPath("missing", "texture")), // gonna look really silly in your throat.
+			Identifier.fromNamespaceAndPath("missing", "texture"), Identifier.fromNamespaceAndPath("missing", "texture"), Identifier.fromNamespaceAndPath("missing", "texture")), // gonna look really silly in your throat.
 		WOODEN(1, "wooden",
 			BeAResearcher.WOODEN_DOLL_CARE_MATERIALS, Items.STICK,
 			BeABirdwatcher.CARE_WOODEN,
@@ -97,11 +99,11 @@ public class BeADoll implements ModInitializer {
 		private final TagKey<Item> careMaterial;
 		private final Item defaultCareMaterial;
 		private final SoundEvent careSound;
-		private final ResourceLocation foodSpriteEmpty;
-		private final ResourceLocation foodSpriteHalf;
-		private final ResourceLocation foodSpritFull;
+		private final Identifier foodSpriteEmpty;
+		private final Identifier foodSpriteHalf;
+		private final Identifier foodSpritFull;
 
-		Variant(final int index, final String id, TagKey<Item> careMaterial, Item defaultCareMaterial, SoundEvent careSound, ResourceLocation foodSpriteEmpty, ResourceLocation foodSpriteHalf, ResourceLocation foodSpritFull) {
+		Variant(final int index, final String id, TagKey<Item> careMaterial, Item defaultCareMaterial, SoundEvent careSound, Identifier foodSpriteEmpty, Identifier foodSpriteHalf, Identifier foodSpritFull) {
 			this.index = index;
 			this.id = id;
 			this.careMaterial = careMaterial;
@@ -121,16 +123,12 @@ public class BeADoll implements ModInitializer {
 		}
 
 		@Override
-		public String getSerializedName() {
+		public @NonNull String getSerializedName() {
 			return this.id;
 		}
 
 		public int getIndex() {
 			return this.index;
-		}
-
-		public static BeADoll.Variant byIndex(int index) {
-			return (BeADoll.Variant)INDEX_MAPPER.apply(index);
 		}
 
 		public TagKey<Item> getCareMaterialTag() {
@@ -141,15 +139,15 @@ public class BeADoll implements ModInitializer {
 			return defaultCareMaterial;
 		}
 
-		public ResourceLocation getFoodSpriteEmpty() {
+		public Identifier getFoodSpriteEmpty() {
 			return foodSpriteEmpty;
 		}
 
-		public ResourceLocation getFoodSpriteHalf() {
+		public Identifier getFoodSpriteHalf() {
 			return foodSpriteHalf;
 		}
 
-		public ResourceLocation getFoodSpritFull() {
+		public Identifier getFoodSpritFull() {
 			return foodSpritFull;
 		}
 	}

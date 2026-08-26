@@ -19,28 +19,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 // (with irrelevant bits trimmed like disabled slots, and variable names made more readable for my sake)
 @Mixin(Entity.class)
 public abstract class DressUpDollEntityMixin {
-	@Inject(method = "interactAt", at = @At("HEAD"), cancellable = true)
-	public void interactAt(Player thatGrabbyPlayer, Vec3 hitPos, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+	@Inject(method = "interact", at = @At("HEAD"), cancellable = true)
+	public void interactAt(Player player, InteractionHand hand, Vec3 location, CallbackInfoReturnable<InteractionResult> cir) {
 		// why do you think this, intellij? you don't complain if they're separate
 		// ohhh you're a hater of the instanceof x isDoll ship. i get it it's not the best pairing but it is valid ok
 		//noinspection ConstantValue
-		if ((Object)this instanceof Player thisDoll && BeAMaid.isDoll(thisDoll) && thatGrabbyPlayer.isSecondaryUseActive()) {
-			ItemStack itemStack = thatGrabbyPlayer.getItemInHand(hand);
-			if (thatGrabbyPlayer.isSpectator()) {
+		if ((Object)this instanceof Player thisDoll && BeAMaid.isDoll(thisDoll) && player.isSecondaryUseActive()) {
+			ItemStack itemStack = player.getItemInHand(hand);
+			if (player.isSpectator()) {
 				cir.setReturnValue(InteractionResult.SUCCESS);
-			} else if (thatGrabbyPlayer.level().isClientSide) {
+			} else if (player.level().isClientSide()) {
 				cir.setReturnValue(InteractionResult.SUCCESS_SERVER);
 			} else {
 				EquipmentSlot preferredSlot = thisDoll.getEquipmentSlotForItem(itemStack);
 				// because players don't normally get equipped i need to add this next line (player is missing some filters)
 				preferredSlot = preferredSlot != EquipmentSlot.BODY && preferredSlot != EquipmentSlot.SADDLE ? preferredSlot : EquipmentSlot.MAINHAND;
 				if (itemStack.isEmpty()) {
-					EquipmentSlot aimedSlot = this.be_a_doll$getSlotFromPosition(thisDoll, hitPos);
-					if (thisDoll.hasItemInSlot(aimedSlot) && this.be_a_doll$equip(thisDoll, thatGrabbyPlayer, aimedSlot, itemStack, hand)) {
+					EquipmentSlot aimedSlot = this.be_a_doll$getSlotFromPosition(thisDoll, location);
+					if (thisDoll.hasItemInSlot(aimedSlot) && this.be_a_doll$equip(thisDoll, player, aimedSlot, itemStack, hand)) {
 						cir.setReturnValue(InteractionResult.SUCCESS_SERVER);
 					}
 				} else {
-					if (this.be_a_doll$equip(thisDoll, thatGrabbyPlayer, preferredSlot, itemStack, hand)) {
+					if (this.be_a_doll$equip(thisDoll, player, preferredSlot, itemStack, hand)) {
 						cir.setReturnValue(InteractionResult.SUCCESS_SERVER);
 					}
 				}

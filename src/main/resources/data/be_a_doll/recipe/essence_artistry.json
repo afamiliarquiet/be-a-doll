@@ -1,4 +1,8 @@
 {
-	"type": "be_a_doll:crafting_special_essenceartistry",
-	"category": "misc"
+	"type": "be_a_doll:crafting_special_essence_artistry",
+	"essence": "be_a_doll:essence_fragment",
+	"variantizer": "#be_a_doll:essence_scents",
+	"result": {
+		"id": "be_a_doll:essence_fragment"
+	}
 }

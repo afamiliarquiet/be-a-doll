@@ -9,10 +9,9 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.animal.Fox;
+import net.minecraft.world.entity.animal.fox.Fox;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -26,6 +25,7 @@ import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.jspecify.annotations.NonNull;
 
 public class RibbonItem extends Item {
 	public RibbonItem(Properties settings) {
@@ -33,14 +33,14 @@ public class RibbonItem extends Item {
 	}
 
 	@Override
-	public InteractionResult interactLivingEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+	public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, @NonNull Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
 		if (entity instanceof Player doll && BeAMaid.isDoll(doll)) {
-			if (doll.startRiding(user, false)) {
+			if (doll.startRiding(user)) {
 				user.playSound(BeABirdwatcher.RAVEN_CHIRP, 1f, 1f);
 				return InteractionResult.SUCCESS;
 			}
 		} else {
-			InteractionResult tried = useToTryRiding(stack, user, entity, hand);
+			InteractionResult tried = useToTryRiding(user, entity);
 			if (tried.consumesAction()) {
 				return tried;
 			}
@@ -49,7 +49,7 @@ public class RibbonItem extends Item {
 		return super.interactLivingEntity(stack, user, entity, hand);
 	}
 
-	public InteractionResult useToTryRiding(ItemStack stack, Player user, Entity entity, InteractionHand hand) {
+	public InteractionResult useToTryRiding(Player user, Entity entity) {
 		if (BeAMaid.isDoll(user)) {
 			// ohh.. so the user was the doll!
 			boolean shouldRide = false;
@@ -72,7 +72,7 @@ public class RibbonItem extends Item {
 	}
 
 	@Override
-	public InteractionResult use(Level world, Player user, InteractionHand hand) {
+	public @NonNull InteractionResult use(@NonNull Level world, Player user, @NonNull InteractionHand hand) {
 		// yeah no lol. did you not see the C2SDollDismountLetter i had to make? client's gotta hear about this
 		if (/*!user.getWorld().isClient && */!user.getPassengers().isEmpty() && user.isSecondaryUseActive()) {
 //			user.removeAllPassengers();
@@ -133,6 +133,7 @@ public class RibbonItem extends Item {
 	//  you've really got a lot of block collision checking going on here
 	//  anyway this partial aim assist only helps in the case of one collision.
 	//  redoing this like entity.amfc would probably be the best way to fix that. assuming amfc is.. what this is.
+	//  hi actually we're using iri here now. y'know how you made the quickstep for archery gimmicks? you probably want something like that.
 	private static @Nullable Vec3 checkForCollisionsOnAxis(Entity doll, EntityDimensions dollStanding, @Nullable Vec3 pos, Direction.Axis axis) {
 		if (pos == null || !doll.level().getBlockCollisions(doll, dollStanding.makeBoundingBox(pos)).iterator().hasNext()) {
 			return pos;

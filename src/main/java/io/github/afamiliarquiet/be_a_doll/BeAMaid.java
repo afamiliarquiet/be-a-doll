@@ -10,7 +10,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class BeAMaid {
@@ -18,7 +18,7 @@ public class BeAMaid {
 	// but the problem is that i like my main initializer classes to be clean and tidy. so, maid here to help!
 
 	// id used for checking on things, map used for removing
-	public static final ResourceLocation DOLLIFIED_MODIFIER_ID = BeADoll.id("dollified");
+	public static final Identifier DOLLIFIED_MODIFIER_ID = BeADoll.id("dollified");
 	public static final HashMultimap<Holder<Attribute>, AttributeModifier> DOLL_MODIFICATIONS = HashMultimap.create();
 	static {
 		DOLL_MODIFICATIONS.put(Attributes.SCALE, new AttributeModifier(DOLLIFIED_MODIFIER_ID, -0.7, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
@@ -27,7 +27,7 @@ public class BeAMaid {
 	}
 
 	public static void bestowApron() {
-		ServerPlayerEvents.AFTER_RESPAWN.register(((oldPlayer, newPlayer, alive) -> {
+		ServerPlayerEvents.AFTER_RESPAWN.register(((oldPlayer, newPlayer, _) -> {
 			// should i care about alive? in theory maybe but it doesn't really matter
 			BeAMaid.setDoll(newPlayer, BeALibrarian.inspectSupposedPlayer(oldPlayer));
 			BeALibrarian.relabelDoll(newPlayer, BeALibrarian.inspectDollLabel(oldPlayer));

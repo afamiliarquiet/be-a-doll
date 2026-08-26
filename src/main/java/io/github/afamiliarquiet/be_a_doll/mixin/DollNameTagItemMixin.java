@@ -18,13 +18,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(NameTagItem.class)
 public class DollNameTagItemMixin {
 	@Inject(at = @At("HEAD"), method = "interactLivingEntity", cancellable = true)
-	private void useOnDoll(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-		if (entity instanceof Player doll && BeAMaid.isDoll(doll)) {
-			Component text = stack.get(DataComponents.CUSTOM_NAME);
+	private void useOnDoll(ItemStack itemStack, Player player, LivingEntity target, InteractionHand type, CallbackInfoReturnable<InteractionResult> cir) {
+		if (target instanceof Player doll && BeAMaid.isDoll(doll)) {
+			Component text = itemStack.get(DataComponents.CUSTOM_NAME);
 			if (text != null) {
-				if (!user.level().isClientSide && entity.isAlive()) {
+				if (!player.level().isClientSide() && target.isAlive()) {
 					BeALibrarian.relabelDoll(doll, text);
-					stack.shrink(1);
+					itemStack.shrink(1);
 				}
 
 				cir.setReturnValue(InteractionResult.SUCCESS);

@@ -6,6 +6,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 
+@SuppressWarnings("unused")
 public class BeAResearcher {
 	public static final TagKey<DamageType> DOLL_IMMUNE = damage("doll_immune");
 	public static final TagKey<DamageType> DOLL_MODIFIES_MESSAGE = damage("doll_modifies_message");
@@ -17,6 +18,8 @@ public class BeAResearcher {
 	public static final TagKey<Item> CLOCKWORK_DOLL_CARE_MATERIALS = item("clockwork_doll_care_materials");
 
 	public static final TagKey<Item> DOLLCRAFT_ITEMS = item("dollcraft_items");
+	public static final TagKey<Item> PLAYER_ITEMS = item("player_items");
+	public static final TagKey<Item> ESSENCE_SCENTS = item("essence_scents");
 
 	public static void grantFunding() {
 

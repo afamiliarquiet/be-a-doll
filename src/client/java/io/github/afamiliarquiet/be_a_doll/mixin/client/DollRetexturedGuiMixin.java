@@ -13,8 +13,8 @@ import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,11 +27,11 @@ public class DollRetexturedGuiMixin {
 	@Shadow
 	private int tickCount;
 
-	@Inject(method = "renderFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodData;getSaturationLevel()F"))
-	private void alterHungerTextures(GuiGraphics context, Player player, int top, int right, CallbackInfo ci,
-									 @Local(name = "identifier", ordinal = 0) LocalRef<ResourceLocation> emptyId,
-									 @Local(name = "identifier2", ordinal = 1) LocalRef<ResourceLocation> fullId,
-									 @Local(name = "identifier3", ordinal = 2) LocalRef<ResourceLocation> halfId
+	@Inject(method = "extractFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodData;getSaturationLevel()F"))
+	private void alterHungerTextures(GuiGraphicsExtractor context, Player player, int top, int right, CallbackInfo ci,
+									 @Local(name = "empty") LocalRef<Identifier> emptyId,
+									 @Local(name = "half") LocalRef<Identifier> fullId,
+									 @Local(name = "full") LocalRef<Identifier> halfId
 	) {
 		// if this has an impact on fps then SUFFER
 		if (BeAMaid.isDoll(player)) {
@@ -42,21 +42,19 @@ public class DollRetexturedGuiMixin {
 		}
 	}
 
-	// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
-// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
-	@Definition(id = "getTexture", method = "Lnet/minecraft/client/gui/Gui$HeartType;getSprite(ZZZ)Lnet/minecraft/resources/ResourceLocation;")
+	@Definition(id = "getTexture", method = "Lnet/minecraft/client/gui/Gui$HeartType;getSprite(ZZZ)Lnet/minecraft/resources/Identifier;")
 	@Expression("?.getTexture(?, ?, ?)")
-	@ModifyExpressionValue(method = "renderHeart", at = @At("MIXINEXTRAS:EXPRESSION"))
-	private ResourceLocation alterAbsorptitonTexture(ResourceLocation original, @Local(argsOnly = true) Gui.HeartType heartType, @Local(argsOnly = true, ordinal = 0) boolean hardcore, @Local(argsOnly = true, ordinal = 2) boolean half) {
-		if (heartType == Gui.HeartType.ABSORBING && BeAMaid.isDoll(Minecraft.getInstance().player)) {
+	@ModifyExpressionValue(method = "extractHeart", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private Identifier alterAbsorptionTexture(Identifier original, @Local(argsOnly = true, name = "type") Gui.HeartType type, @Local(argsOnly = true, name = "isHardcore") boolean isHardcore, @Local(argsOnly = true, name = "half") boolean half) {
+		if (type == Gui.HeartType.ABSORBING && BeAMaid.isDoll(Minecraft.getInstance().player)) {
 			if (half) {
-				if (hardcore) {
+				if (isHardcore) {
 					return BeACurator.CARED_HEART_HARDCORE_HALF;
 				} else {
 					return BeACurator.CARED_HEART_HALF;
 				}
 			} else {
-				if (hardcore) {
+				if (isHardcore) {
 					return BeACurator.CARED_HEART_HARDCORE_FULL;
 				} else {
 					return BeACurator.CARED_HEART_FULL;
@@ -67,21 +65,17 @@ public class DollRetexturedGuiMixin {
 		}
 	}
 
-	// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
-// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
 	@Definition(id = "hasEffect", method = "Lnet/minecraft/world/entity/player/Player;hasEffect(Lnet/minecraft/core/Holder;)Z")
 	@Expression("?.hasEffect(?)")
-	@ModifyExpressionValue(method = "renderPlayerHealth", at = @At("MIXINEXTRAS:EXPRESSION"))
-	private boolean orOverflowing(boolean original, @Local(name = "playerEntity", ordinal = 0) Player player) {
+	@ModifyExpressionValue(method = "extractPlayerHealth", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private boolean orOverflowing(boolean original, @Local(name = "player") Player player) {
 		return original || player.hasEffect(BeAWitch.OVERFLOWING);
 	}
 
-	// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
-// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
 	@Definition(id = "getSaturationLevel", method = "Lnet/minecraft/world/food/FoodData;getSaturationLevel()F")
 	@Expression("?.getSaturationLevel() <= ?")
-	@ModifyExpressionValue(method = "renderFood", at = @At("MIXINEXTRAS:EXPRESSION"))
-	private boolean resaturatingWave(boolean original, @Local(argsOnly = true) Player player, @Local(name="j", ordinal = 3) int index, @Local(name="k", ordinal = 4) LocalIntRef yPos) {
+	@ModifyExpressionValue(method = "extractFood", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private boolean resaturatingWave(boolean original, @Local(argsOnly = true, name = "player") Player player, @Local(name = "i") int index, @Local(name = "yo") LocalIntRef yPos) {
 		if (player.hasEffect(BeAWitch.OVERFLOWING) && BeAMaid.isDoll(player)) {
 			// if i was a super optimizer i could put the ticks % 15 outside the for loop.
 			if (index == this.tickCount % 25) {

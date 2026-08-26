@@ -3,8 +3,8 @@ package io.github.afamiliarquiet.be_a_doll.diary;
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.resources.ResourceLocation;
 
 public class BeABirdwatcher {
 	public static final SoundEvent RAVEN_CHIRP = registerSound("item.be_a_doll.ribbon.tied");
@@ -26,7 +26,7 @@ public class BeABirdwatcher {
 	}
 
 	private static SoundEvent registerSound(String thing) {
-		ResourceLocation id = BeADoll.id(thing);
+		Identifier id = BeADoll.id(thing);
 		return Registry.register(BuiltInRegistries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id));
 	}
 }

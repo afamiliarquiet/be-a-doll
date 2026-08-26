@@ -7,20 +7,16 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import org.jspecify.annotations.NonNull;
 
 public class OverflowingStatusEffect extends MobEffect {
 	public OverflowingStatusEffect(MobEffectCategory category, int color) {
 		super(category, color);
 	}
 
-	public OverflowingStatusEffect(MobEffectCategory category, int color, ParticleOptions particleEffect) {
-		super(category, color, particleEffect);
-	}
-
 	@Override
-	public boolean applyEffectTick(ServerLevel world, LivingEntity entity, int amplifier) {
+	public boolean applyEffectTick(@NonNull ServerLevel world, @NonNull LivingEntity entity, int amplifier) {
 		if (entity instanceof Player playerEntity) {
 			if (BeAMaid.isDoll(playerEntity)) { // dolls get a bit of repairs
 				FoodData hungry = playerEntity.getFoodData();
@@ -47,7 +43,7 @@ public class OverflowingStatusEffect extends MobEffect {
 	}
 
 	@Override
-	public void onEffectStarted(LivingEntity entity, int amplifier) {
+	public void onEffectStarted(@NonNull LivingEntity entity, int amplifier) {
 		BeAWitch.annihilate(entity, entity.getEffect(BeAWitch.OVERFLOWING), entity.getEffect(BeAWitch.FRAGMENTED));
 		super.onEffectStarted(entity, amplifier);
 	}

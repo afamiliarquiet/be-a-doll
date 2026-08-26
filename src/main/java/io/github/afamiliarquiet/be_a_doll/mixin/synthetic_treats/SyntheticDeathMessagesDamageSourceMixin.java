@@ -22,13 +22,11 @@ public class SyntheticDeathMessagesDamageSourceMixin {
 	@Final
 	private Holder<DamageType> type;
 
-	// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
-// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
     @Definition(id = "msgId", method = "Lnet/minecraft/world/damagesource/DamageType;msgId()Ljava/lang/String;")
 	@Expression("?.msgId()")
 	@ModifyExpressionValue(method = "getLocalizedDeathMessage", at = @At("MIXINEXTRAS:EXPRESSION"))
-	private String addDollQualifierIfIWant(String original, @Local(argsOnly = true) LivingEntity killed) {
-		if (killed instanceof Player beWaryOfDoll && BeAMaid.isDoll(beWaryOfDoll)) {
+	private String addDollQualifierIfIWant(String original, @Local(argsOnly = true, name = "victim") LivingEntity victim) {
+		if (victim instanceof Player beWaryOfDoll && BeAMaid.isDoll(beWaryOfDoll)) {
 			if (type.is(BeAResearcher.DOLL_MODIFIES_MESSAGE)) {
 				return "doll." + original;
 			}

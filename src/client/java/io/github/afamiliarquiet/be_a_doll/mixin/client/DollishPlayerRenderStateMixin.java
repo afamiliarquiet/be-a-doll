@@ -2,12 +2,12 @@ package io.github.afamiliarquiet.be_a_doll.mixin.client;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.DollishState;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(PlayerRenderState.class)
+@Mixin(AvatarRenderState.class)
 public class DollishPlayerRenderStateMixin implements DollishState {
 	@Unique
 	private BeADoll.Variant be_a_doll$variant = BeADoll.Variant.DEFAULT;

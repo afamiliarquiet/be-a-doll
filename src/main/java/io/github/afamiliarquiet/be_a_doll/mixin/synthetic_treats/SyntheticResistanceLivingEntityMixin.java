@@ -21,10 +21,10 @@ public class SyntheticResistanceLivingEntityMixin {
 	}
 
 	@Inject(method = "canBeAffected", at = @At("HEAD"), cancellable = true)
-	private void ifDollThenNoHunger(MobEffectInstance effect, CallbackInfoReturnable<Boolean> cir) {
+	private void ifDollThenNoHunger(MobEffectInstance newEffect, CallbackInfoReturnable<Boolean> cir) {
 		//noinspection ConstantValue
 		if ((Object)this instanceof Player couldThisBeDoll && BeAMaid.isDoll(couldThisBeDoll)) {
-			if (effect.is(MobEffects.HUNGER)) {
+			if (newEffect.is(MobEffects.HUNGER)) {
 				cir.setReturnValue(false);
 			}
 		}

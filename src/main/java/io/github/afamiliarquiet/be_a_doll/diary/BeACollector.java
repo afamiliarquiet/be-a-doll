@@ -3,7 +3,7 @@ package io.github.afamiliarquiet.be_a_doll.diary;
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.item.DollcraftItem;
 import io.github.afamiliarquiet.be_a_doll.item.RibbonItem;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -73,9 +73,9 @@ public class BeACollector {
 
 
 	public static void inquireAboutTheCollection() {
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(itemGroup -> {
-			itemGroup.addAfter(Items.BRUSH, CARVING_KNIFE, MODELING_TOOL, SEWING_NEEDLE, FLUSH_CUTTER, WATCHMAKERS_SCREWDRIVER, DOLL_RIBBON);
-		});
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(itemGroup ->
+			itemGroup.insertAfter(Items.BRUSH, CARVING_KNIFE, MODELING_TOOL, SEWING_NEEDLE, FLUSH_CUTTER, WATCHMAKERS_SCREWDRIVER, DOLL_RIBBON)
+		);
 	}
 
 
@@ -99,6 +99,7 @@ public class BeACollector {
 
 
 
+	@SuppressWarnings("SameParameterValue")
 	private static <T> DataComponentType<T> registerComponent(String id, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
 		return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, BeADoll.id(id), builderOperator.apply(DataComponentType.builder()).build());
 	}

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Player.class)
 public abstract class DollsCantEatPlayerMixin {
 	@Inject(at = @At("HEAD"), method = "canEat", cancellable = true)
-	private void notIfDoll(boolean ignoreHunger, CallbackInfoReturnable<Boolean> cir) {
+	private void notIfDoll(boolean canAlwaysEat, CallbackInfoReturnable<Boolean> cir) {
 		if (BeAMaid.isDoll((Player)(Object)this)) {
 			cir.setReturnValue(true);
 		}

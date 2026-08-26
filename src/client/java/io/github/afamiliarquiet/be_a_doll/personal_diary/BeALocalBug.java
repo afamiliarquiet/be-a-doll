@@ -1,36 +1,38 @@
 package io.github.afamiliarquiet.be_a_doll.personal_diary;
 
 import io.github.afamiliarquiet.be_a_doll.diary.BeABug;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class BeALocalBug {
 	public static void lookAtBug() {
-		ParticleFactoryRegistry bugParty = ParticleFactoryRegistry.getInstance();
+		ParticleProviderRegistry bugParty = ParticleProviderRegistry.getInstance();
 		bugParty.register(BeABug.FRAGMENTED, FragmentedParticle.Factory::new);
 	}
 
-	public static class FragmentedParticle extends TextureSheetParticle {
-		private static final RandomSource RANDOM = RandomSource.create();
+	public static class FragmentedParticle extends SingleQuadParticle {
+//		private static final RandomSource RANDOM = RandomSource.create();
 		private final int fromColor;
 		private final int toColor;
 
-		protected FragmentedParticle(ClientLevel clientWorld, double x, double y, double z, int fromColor, int toColor, double xr, double zr) {
+		protected FragmentedParticle(ClientLevel clientWorld, double x, double y, double z, int fromColor, int toColor, double xr, double yr, double zr, TextureAtlasSprite sprite) {
 			// this is silly. 3 layers to avoid being restricted by super() on line 1 and ignore half of it anyway
-			this(clientWorld, x, y, z, 0.05 - xr * 0.1, 0.0125 - RANDOM.nextDouble() * 0.025, 0.05 - zr  * 0.1, fromColor, toColor);
+			this(clientWorld, x, y, z, 0.05 - xr * 0.1, 0.0125 - yr * 0.025, 0.05 - zr  * 0.1, fromColor, toColor, sprite);
 		}
 
-		protected FragmentedParticle(ClientLevel clientWorld, double x, double y, double z, double vx, double vy, double vz, int fromColor, int toColor) {
-			super(clientWorld, x+vx*2, y+vy*2, z+vz*2, 0, 0, 0);
+		protected FragmentedParticle(ClientLevel clientWorld, double x, double y, double z, double vx, double vy, double vz, int fromColor, int toColor, TextureAtlasSprite sprite) {
+			super(clientWorld, x+vx*2, y+vy*2, z+vz*2, 0, 0, 0, sprite);
 
 			this.xd = vx;
 			this.yd = vy;
@@ -58,7 +60,7 @@ public class BeALocalBug {
 				this.xd = this.xd * this.friction;
 				this.yd = this.yd * this.friction;
 				this.zd = this.zd * this.friction;
-				setColorSimpler(ARGB.lerp((float)this.age / this.lifetime, this.fromColor, this.toColor));
+				setColorSimpler(ARGB.srgbLerp((float)this.age / this.lifetime, this.fromColor, this.toColor));
 			}
 		}
 
@@ -67,9 +69,14 @@ public class BeALocalBug {
 			this.setAlpha(ARGB.alpha(color) / 255.0F);
 		}
 
+//		@Override
+//		public ParticleRenderType getRenderType() {
+//			return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+//		}
+
 		@Override
-		public ParticleRenderType getRenderType() {
-			return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+		protected @NonNull Layer getLayer() {
+			return Layer.TRANSLUCENT;
 		}
 
 		public static class Factory implements ParticleProvider<SimpleParticleType> {
@@ -79,10 +86,18 @@ public class BeALocalBug {
 				this.spriteProvider = spriteProvider;
 			}
 
-			public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i) {
-				FragmentedParticle bug = new FragmentedParticle(clientWorld, d, e, f, 0xff95a5e9, RANDOM.nextBoolean() ? 0xfff77490 : 0xfffab598, RANDOM.nextDouble(), RANDOM.nextDouble());
+//			public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i) {
+//				FragmentedParticle bug = new FragmentedParticle(clientWorld, d, e, f, 0xff95a5e9, RANDOM.nextBoolean() ? 0xfff77490 : 0xfffab598, RANDOM.nextDouble(), RANDOM.nextDouble(), this.spriteProvider.first());
+//				bug.scale(Mth.randomBetween(clientWorld.getRandom(), 3.0F, 5.0F));
+//				bug.pickSprite(this.spriteProvider);
+//				return bug;
+//			}
+
+			@Override
+			public @Nullable Particle createParticle(SimpleParticleType options, @NonNull ClientLevel clientWorld, double x, double y, double z, double xAux, double yAux, double zAux, RandomSource random) {
+				FragmentedParticle bug = new FragmentedParticle(clientWorld, x, y, z, 0xff95a5e9, random.nextBoolean() ? 0xfff77490 : 0xfffab598, random.nextDouble(), random.nextDouble(), random.nextDouble(), this.spriteProvider.first());
 				bug.scale(Mth.randomBetween(clientWorld.getRandom(), 3.0F, 5.0F));
-				bug.pickSprite(this.spriteProvider);
+//				bug.pickSprite(this.spriteProvider);
 				return bug;
 			}
 		}

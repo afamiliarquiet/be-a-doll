@@ -30,19 +30,19 @@ public class DollToDollCommunicationPlayerListMixin {
 	private MinecraftServer server;
 
 	@Inject(at = @At("HEAD"), method = "broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Ljava/util/function/Predicate;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V")
-	private void papersPlease(PlayerChatMessage message, Predicate<ServerPlayer> shouldSendFiltered, @Nullable ServerPlayer sender, ChatType.Bound params, CallbackInfo ci) {
+	private void papersPlease(PlayerChatMessage message, Predicate<ServerPlayer> isFiltered, @Nullable ServerPlayer senderPlayer, ChatType.Bound chatType, CallbackInfo ci) {
 		// this is, in my head, a helpful measure with large player counts.
 		// (also a late redecoration. i guess i could shave off one decorate with another mixin,
 		//  but i don't think i really need to worry that much about optimizing.)
-		BeADollthing.prepareMessageSending(message, sender, this.server);
+		BeADollthing.prepareMessageSending(message, senderPlayer, this.server);
 	}
 
 	@ModifyArg(index = 0, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;sendChatMessage(Lnet/minecraft/network/chat/OutgoingChatMessage;ZLnet/minecraft/network/chat/ChatType$Bound;)V"), method = "broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Ljava/util/function/Predicate;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V")
-	private OutgoingChatMessage distributeFliers(OutgoingChatMessage message, @Local(argsOnly = true) PlayerChatMessage signedMessage, @Local(ordinal = 0, argsOnly = true) ServerPlayer sender, @Local(ordinal = 1) ServerPlayer target) {
-		IntraLibraryMessageCacheLetter documents = BeALibrarian.checkDocuments(sender);
-		C2SKeysmashConfigSyncLetter passwords = BeALibrarian.checkFilesForPasswordManager(target);
+	private OutgoingChatMessage distributeFliers(OutgoingChatMessage message, @Local(argsOnly = true, name = "senderPlayer") ServerPlayer senderPlayer, @Local(name = "player") ServerPlayer player) {
+		IntraLibraryMessageCacheLetter documents = BeALibrarian.checkDocuments(senderPlayer);
+		C2SKeysmashConfigSyncLetter passwords = BeALibrarian.checkFilesForPasswordManager(player);
 		if (documents != null && documents.senderSmashesKeys()) {
-			if (target != sender && (BeAMaid.isDoll(target) && passwords.readableOthers() || target.position().closerThan(sender.position(), 13)) || target == sender && documents.senderSeesClearly()) {
+			if (player != senderPlayer && (BeAMaid.isDoll(player) && passwords.readableOthers() || player.position().closerThan(senderPlayer.position(), 13)) || player == senderPlayer && documents.senderSeesClearly()) {
 				return documents.dolledMessage();
 			} else {
 				return documents.keysmashedMessage();
@@ -53,9 +53,9 @@ public class DollToDollCommunicationPlayerListMixin {
 	}
 
 	@Inject(at = @At("RETURN"), method = "broadcastChatMessage(Lnet/minecraft/network/chat/PlayerChatMessage;Ljava/util/function/Predicate;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/network/chat/ChatType$Bound;)V")
-	private void timesUp(PlayerChatMessage message, Predicate<ServerPlayer> shouldSendFiltered, @Nullable ServerPlayer sender, ChatType.Bound params, CallbackInfo ci) {
-		if (sender != null) {
-			BeALibrarian.shredDocuments(sender);
+	private void timesUp(PlayerChatMessage message, Predicate<ServerPlayer> isFiltered, @Nullable ServerPlayer senderPlayer, ChatType.Bound chatType, CallbackInfo ci) {
+		if (senderPlayer != null) {
+			BeALibrarian.shredDocuments(senderPlayer);
 		}
 	}
 }

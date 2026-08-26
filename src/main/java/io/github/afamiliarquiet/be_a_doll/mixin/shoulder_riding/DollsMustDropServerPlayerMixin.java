@@ -23,7 +23,7 @@ public abstract class DollsMustDropServerPlayerMixin extends Player {
 	}
 
 	@Inject(method = "setGameMode", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;removeEntitiesOnShoulder()V"))
-	private void untieDolls(GameType gameMode, CallbackInfoReturnable<Boolean> cir) {
+	private void untieDolls(GameType mode, CallbackInfoReturnable<Boolean> cir) {
 		List<Entity> passengers = this.getPassengers();
 		if (!passengers.isEmpty()) {
 			ServerPlayNetworking.send((ServerPlayer) (Object) this, new S2CDollDismountLetter(passengers.stream().map(Entity::getId).toList()));

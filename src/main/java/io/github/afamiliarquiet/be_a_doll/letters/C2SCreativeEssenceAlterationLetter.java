@@ -3,12 +3,12 @@ package io.github.afamiliarquiet.be_a_doll.letters;
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.BeASelf;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import org.jspecify.annotations.NonNull;
 
 // me sowing: haha fsdf;lkj yeah!!! thanks creative inventory screen now i know how to do an evil and strange slot!!
 // me reaping: well this fdj;lksing sucks. why are you being evil to me too.
@@ -32,7 +32,7 @@ public record C2SCreativeEssenceAlterationLetter(boolean inserting, ItemStack st
 	}
 
 	@Override
-	public Type<? extends CustomPacketPayload> type() {
+	public @NonNull Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 }

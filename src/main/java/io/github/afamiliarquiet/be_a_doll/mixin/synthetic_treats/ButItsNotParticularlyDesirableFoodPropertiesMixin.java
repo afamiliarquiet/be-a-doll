@@ -14,11 +14,11 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(FoodProperties.class)
 public class ButItsNotParticularlyDesirableFoodPropertiesMixin {
 	@WrapOperation(method = "onConsume", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodData;eat(Lnet/minecraft/world/food/FoodProperties;)V"))
-	private void sorryDollButThatsJustMakingAMessOnTheInside(FoodData instance, FoodProperties foodComponent, Operation<Void> original, @Local(argsOnly = true, ordinal = 0) LivingEntity user) {
+	private void sorryDollButThatsJustMakingAMessOnTheInside(FoodData instance, FoodProperties foodProperties, Operation<Void> original, @Local(argsOnly = true, name = "user") LivingEntity user) {
 		if (user instanceof Player beWaryOfDoll && BeAMaid.isDoll(beWaryOfDoll)) {
 			instance.addExhaustion(4f);
 		} else {
-			original.call(instance, foodComponent);
+			original.call(instance, foodProperties);
 		}
 	}
 }

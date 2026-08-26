@@ -1,12 +1,12 @@
 package io.github.afamiliarquiet.be_a_doll.letters;
 
 import io.github.afamiliarquiet.be_a_doll.BeADoll;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import org.jspecify.annotations.NonNull;
 
 public record S2CDollRepairedLetter(int entityId, ItemStack material) implements CustomPacketPayload {
 	public static final CustomPacketPayload.Type<S2CDollRepairedLetter> ID = new CustomPacketPayload.Type<>(BeADoll.id("doll_repaired_letter"));
@@ -20,7 +20,7 @@ public record S2CDollRepairedLetter(int entityId, ItemStack material) implements
 	);
 
 	@Override
-	public Type<? extends CustomPacketPayload> type() {
+	public @NonNull Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 }

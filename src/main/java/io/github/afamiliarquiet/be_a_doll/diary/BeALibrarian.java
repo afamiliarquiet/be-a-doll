@@ -7,16 +7,12 @@ import io.github.afamiliarquiet.be_a_doll.letters.IntraLibraryMessageCacheLetter
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.util.Unit;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import symbolics.division.occmy.obv.OccEntities;
 
-@SuppressWarnings("UnstableApiUsage")
 public class BeALibrarian {
 	// how does this librarian differ from the maid? this one handles the forbidden (experimental) knowledge!
 	public static final AttachmentType<BeADoll.Variant> DOLL_VARIANT = AttachmentRegistry.create(
@@ -75,13 +71,13 @@ public class BeALibrarian {
 		doll.setAttached(DOLL_VARIANT, variant);
 
 		// special compat treat for clockwork dolls
-		if (FabricLoader.getInstance().isModLoaded("occmy")) {
-			if (variant == BeADoll.Variant.CLOCKWORK) {
-				doll.setAttached(OccEntities.ENJOINED, Unit.INSTANCE);
-			} else {
-				doll.removeAttached(OccEntities.ENJOINED);
-			}
-		}
+//		if (FabricLoader.getInstance().isModLoaded("occmy")) {
+//			if (variant == BeADoll.Variant.CLOCKWORK) {
+//				doll.setAttached(OccEntities.ENJOINED, Unit.INSTANCE);
+//			} else {
+//				doll.removeAttached(OccEntities.ENJOINED);
+//			}
+//		}
 	}
 
 	public static @Nullable Component inspectDollLabel(@NotNull Player doll) {
@@ -94,11 +90,11 @@ public class BeALibrarian {
 
 	public static void repress(@NotNull Player player) {
 		// clean up special compat treat
-		if (FabricLoader.getInstance().isModLoaded("occmy")) {
-			if (inspectDollMaterial(player) == BeADoll.Variant.CLOCKWORK) {
-				player.removeAttached(OccEntities.ENJOINED);
-			}
-		}
+//		if (FabricLoader.getInstance().isModLoaded("occmy")) {
+//			if (inspectDollMaterial(player) == BeADoll.Variant.CLOCKWORK) {
+//				player.removeAttached(OccEntities.ENJOINED);
+//			}
+//		}
 
 		player.removeAttached(DOLL_VARIANT);
 		player.removeAttached(DOLL_NAME);

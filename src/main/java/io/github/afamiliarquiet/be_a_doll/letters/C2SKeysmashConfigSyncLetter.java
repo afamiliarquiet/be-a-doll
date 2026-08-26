@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
+import org.jspecify.annotations.NonNull;
 
 public record C2SKeysmashConfigSyncLetter(boolean useKeysmashing, boolean readableSelf, boolean readableOthers, String letterPoolOverride, float restockThreshold, boolean useOrderedSpooling, float baseClarityChance, float startingClarityScore, float keysmashedMultiplier, float spokenLoudlyClarity, float nonletterClarity) implements CustomPacketPayload {
 	public static final Type<C2SKeysmashConfigSyncLetter> ID = new Type<>(BeADoll.id("keysmash_config_letter"));
@@ -35,7 +35,7 @@ public record C2SKeysmashConfigSyncLetter(boolean useKeysmashing, boolean readab
 	}
 
 	@Override
-	public Type<? extends CustomPacketPayload> type() {
+	public @NonNull Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 }

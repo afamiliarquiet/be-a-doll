@@ -10,7 +10,6 @@ import io.github.afamiliarquiet.be_a_doll.letters.S2CDollRepairedLetter;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.component.UseCooldown;
 import net.minecraft.world.item.component.Weapon;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,6 +28,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Predicate;
 
@@ -41,7 +41,7 @@ public class DollcraftItem extends Item {
 
 	// care for self
 	@Override
-	public InteractionResult use(Level world, Player user, InteractionHand hand) {
+	public @NonNull InteractionResult use(@NonNull Level world, @NonNull Player user, @NonNull InteractionHand hand) {
 		if (BeAMaid.isDoll(user) && !findCareMaterial(user, user).isEmpty()) {
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
@@ -51,17 +51,17 @@ public class DollcraftItem extends Item {
 	}
 
 	@Override
-	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+	public @NonNull ItemUseAnimation getUseAnimation(@NonNull ItemStack stack) {
 		return ItemUseAnimation.BRUSH;
 	}
 
 	@Override
-	public int getUseDuration(ItemStack stack, LivingEntity user) {
+	public int getUseDuration(@NonNull ItemStack stack, @NonNull LivingEntity user) {
 		return 62;
 	}
 
 	@Override
-	public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+	public void onUseTick(@NonNull Level world, @NonNull LivingEntity user, @NonNull ItemStack stack, int remainingUseTicks) {
 		if (user instanceof Player praiseTheDoll) {
 			ItemStack material = findCareMaterial(praiseTheDoll, praiseTheDoll);
 			if (material.isEmpty()) {
@@ -82,7 +82,7 @@ public class DollcraftItem extends Item {
 	}
 
 	@Override
-	public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
+	public @NonNull ItemStack finishUsingItem(@NonNull ItemStack stack, @NonNull Level world, @NonNull LivingEntity user) {
 		if (user instanceof Player doll) {
 			performCare(doll, doll, stack, user.getUsedItemHand(), false);
 		}
@@ -92,7 +92,7 @@ public class DollcraftItem extends Item {
 
 	// care for other
 	@Override
-	public InteractionResult interactLivingEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+	public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, @NonNull Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
 		if (entity instanceof Player doll && !user.getCooldowns().isOnCooldown(stack)) {
 			InteractionResult careResult = performCare(user, doll, stack, hand, true);
 			if (careResult.consumesAction()) {
@@ -129,7 +129,7 @@ public class DollcraftItem extends Item {
 
 				caringIsCaring(doll);
 				material.split(1);
-				dollcraftStack.hurtAndBreak(1, user, LivingEntity.getSlotForHand(hand));
+				dollcraftStack.hurtAndBreak(1, user, hand.asEquipmentSlot());
 				return InteractionResult.SUCCESS;
 			}
 		}
@@ -182,7 +182,7 @@ public class DollcraftItem extends Item {
 			);
 			pos = pos.add(dollHouse.getMinPosition());
 
-			doll.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, material), pos.x, pos.y, pos.z, vel.x, vel.y + 0.05, vel.z);
+			doll.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, material.getItem()), pos.x, pos.y, pos.z, vel.x, vel.y + 0.05, vel.z);
 		}
 	}
 

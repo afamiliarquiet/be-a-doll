@@ -17,12 +17,10 @@ public abstract class RiptideIgnorePassengersLivingEntityMixin extends Entity {
 		super(type, world);
 	}
 
-	// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
-// TODO(Ravel): remapper for com.llamalad7.mixinextras.expression.Expression is not implemented
     @Definition(id = "LivingEntity", type = LivingEntity.class)
 	@Expression("? instanceof LivingEntity")
 	@ModifyExpressionValue(method = "checkAutoSpinAttack", at = @At("MIXINEXTRAS:EXPRESSION"))
-	private boolean isTarget(boolean original, @Local(ordinal = 0) Entity possibleTarget) {
-		return original && !this.equals(possibleTarget.getVehicle());
+	private boolean isTarget(boolean original, @Local(name = "entity") Entity entity) {
+		return original && !this.equals(entity.getVehicle());
 	}
 }

@@ -4,12 +4,12 @@ import io.github.afamiliarquiet.be_a_doll.BeADoll;
 import io.github.afamiliarquiet.be_a_doll.BeASelf;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.inventory.InventoryMenu;
+import org.jspecify.annotations.NonNull;
 
 public record C2SEssenceAlterationLetter(boolean inserting) implements CustomPacketPayload {
 	public static final CustomPacketPayload.Type<C2SEssenceAlterationLetter> ID = new CustomPacketPayload.Type<>(BeADoll.id("essence_alteration_letter"));
@@ -29,7 +29,7 @@ public record C2SEssenceAlterationLetter(boolean inserting) implements CustomPac
 	}
 
 	@Override
-	public Type<? extends CustomPacketPayload> type() {
+	public @NonNull Type<? extends CustomPacketPayload> type() {
 		return ID;
 	}
 }

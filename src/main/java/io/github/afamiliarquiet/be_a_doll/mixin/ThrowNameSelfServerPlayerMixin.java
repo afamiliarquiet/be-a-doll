@@ -23,14 +23,14 @@ public abstract class ThrowNameSelfServerPlayerMixin extends Player {
 	}
 
 	@Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At("HEAD"), cancellable = true)
-	private void hehe(ItemStack stack, boolean dropAtSelf, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
+	private void hehe(ItemStack itemStack, boolean randomly, boolean thrownFromHand, CallbackInfoReturnable<ItemEntity> cir) {
 		// if a doll looks straight up and throws a name tag, they can write on their own tag!
-		if (this.getXRot() <= -88.5f && stack.is(Items.NAME_TAG) && BeAMaid.isDoll(this)) {
-			Component text = stack.get(DataComponents.CUSTOM_NAME);
+		if (this.getXRot() <= -88.5f && itemStack.is(Items.NAME_TAG) && BeAMaid.isDoll(this)) {
+			Component text = itemStack.get(DataComponents.CUSTOM_NAME);
 			if (text != null) {
 				if (this.isAlive()) {
 					BeALibrarian.relabelDoll(this, text);
-					stack.shrink(1);
+					itemStack.shrink(1);
 				}
 
 				cir.setReturnValue(null);

@@ -51,11 +51,11 @@ public abstract class ShoulderRidingEntityMixin {
 	}
 
 	// `this` is the doll
-	@ModifyExpressionValue(method = "startRiding(Lnet/minecraft/world/entity/Entity;Z)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityType;canSerialize()Z"))
-	private boolean forDirtsSakeJustLetMeRideOtherPlayers(boolean original, @Local(argsOnly = true) Entity mount) {
+	@ModifyExpressionValue(method = "startRiding(Lnet/minecraft/world/entity/Entity;ZZ)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityType;canSerialize()Z"))
+	private boolean forDirtsSakeJustLetMeRideOtherPlayers(boolean original, @Local(argsOnly = true, name = "entityToRide") Entity entityToRide) {
 		// i've seen you do this before intellij. and you've gotta stop it
 		//noinspection ConstantValue
-		if (mount instanceof Player && (Object)this instanceof Player doll && BeAMaid.isDoll(doll)) {
+		if (entityToRide instanceof Player && (Object)this instanceof Player doll && BeAMaid.isDoll(doll)) {
 			return true;
 		} else {
 			return original;

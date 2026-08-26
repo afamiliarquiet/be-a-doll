@@ -2,7 +2,7 @@ package io.github.afamiliarquiet.be_a_doll;
 
 import eu.pb4.styledchat.StyledChatStyles;
 import eu.pb4.styledchat.StyledChatUtils;
-import eu.pb4.styledchat.ducks.ExtSignedMessage;
+import eu.pb4.styledchat.ducks.ExtPlayerChatMessage;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import io.github.afamiliarquiet.be_a_doll.letters.C2SKeysmashConfigSyncLetter;
 import io.github.afamiliarquiet.be_a_doll.letters.IntraLibraryMessageCacheLetter;
@@ -49,10 +49,10 @@ public class BeADollthing {
 			PlayerChatMessage dolledMessage = message.withUnsignedContent(dolledContent);
 
 			if (hackTheStyles) {
-				ExtSignedMessage.setArg(keysmashedMessage, "base_input", keysmashedContent);
-				ExtSignedMessage.setArg(dolledMessage, "base_input", dolledContent);
-				ExtSignedMessage.setArg(keysmashedMessage, "override", StyledChatStyles.getChat(sender, keysmashedContent));
-				ExtSignedMessage.setArg(dolledMessage, "override", StyledChatStyles.getChat(sender, dolledContent));
+				ExtPlayerChatMessage.setArg(keysmashedMessage, "base_input", keysmashedContent);
+				ExtPlayerChatMessage.setArg(dolledMessage, "base_input", dolledContent);
+				ExtPlayerChatMessage.setArg(keysmashedMessage, "override", StyledChatStyles.getChat(sender, keysmashedContent));
+				ExtPlayerChatMessage.setArg(dolledMessage, "override", StyledChatStyles.getChat(sender, dolledContent));
 			}
 
 			C2SKeysmashConfigSyncLetter passwordManager = BeALibrarian.checkFilesForPasswordManager(sender);

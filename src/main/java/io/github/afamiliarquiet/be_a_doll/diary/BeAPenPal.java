@@ -10,16 +10,16 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 public class BeAPenPal {
 	public static void fillPen() {
-		PayloadTypeRegistry.playS2C().register(S2CDollDismountLetter.ID, S2CDollDismountLetter.PACKET_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(S2CDollDismountLetter.ID, S2CDollDismountLetter.PACKET_CODEC);
 
-		PayloadTypeRegistry.playC2S().register(C2SEssenceAlterationLetter.ID, C2SEssenceAlterationLetter.PACKET_CODEC);
-		PayloadTypeRegistry.playC2S().register(C2SCreativeEssenceAlterationLetter.ID, C2SCreativeEssenceAlterationLetter.PACKET_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(C2SEssenceAlterationLetter.ID, C2SEssenceAlterationLetter.PACKET_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(C2SCreativeEssenceAlterationLetter.ID, C2SCreativeEssenceAlterationLetter.PACKET_CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(C2SEssenceAlterationLetter.ID, C2SEssenceAlterationLetter::receive);
 		ServerPlayNetworking.registerGlobalReceiver(C2SCreativeEssenceAlterationLetter.ID, C2SCreativeEssenceAlterationLetter::receive);
 
-		PayloadTypeRegistry.playS2C().register(S2CDollRepairedLetter.ID, S2CDollRepairedLetter.PACKET_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(S2CDollRepairedLetter.ID, S2CDollRepairedLetter.PACKET_CODEC);
 
-		PayloadTypeRegistry.playC2S().register(C2SKeysmashConfigSyncLetter.ID, C2SKeysmashConfigSyncLetter.PACKET_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(C2SKeysmashConfigSyncLetter.ID, C2SKeysmashConfigSyncLetter.PACKET_CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(C2SKeysmashConfigSyncLetter.ID, C2SKeysmashConfigSyncLetter::receive);
 	}
 }

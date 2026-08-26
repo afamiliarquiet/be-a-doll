@@ -20,7 +20,7 @@ public abstract class SyntheticResistancePlayerMixin extends LivingEntity {
 	}
 
 	@Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
-	private void dollsAreImmuneToDrowningAndFreezing(ServerLevel world, DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+	private void dollsAreImmuneToDrowningAndFreezing(ServerLevel level, DamageSource source, CallbackInfoReturnable<Boolean> cir) {
 		if (BeAMaid.isDoll((Player)(Object)this)) { // full metal alchemist..
 			if (source.is(BeAResearcher.DOLL_IMMUNE)) {
 				cir.setReturnValue(true);

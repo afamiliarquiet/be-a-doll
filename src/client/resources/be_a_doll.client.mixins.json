@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "io.github.afamiliarquiet.be_a_doll.mixin.client",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "client": [
     "DollishPlayerRenderStateMixin",
     "DollReadableNameLivingEntityRendererMixin",

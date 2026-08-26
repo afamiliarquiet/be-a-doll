@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -26,18 +27,18 @@ public abstract class SelfInventoryScreenMixin extends AbstractRecipeBookScreen<
 	// Are you annoyed/displeased/disgusted/revolted/terrified?
 	// Tell me how I can do better! Save me! Please! Please, anyone, help me! Is anyone there?!
 	// i don't like screens
-	@Inject(method = "mouseReleased", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen;mouseReleased(DDI)Z"), cancellable = true)
-	private void clicky(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+	@Inject(method = "mouseReleased", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen;mouseReleased(Lnet/minecraft/client/input/MouseButtonEvent;)Z"), cancellable = true)
+	private void clicky(MouseButtonEvent event, CallbackInfoReturnable<Boolean> cir) {
 		// todone i think - if im injecting head i may want to help out with the mouseReleased thing but.. mess
 		//  i don't want to let super get called because that does other slot stuff
-		if (BeASelf.isMouseInSurvivalSelf(mouseX, mouseY, this.leftPos, this.topPos) && this.minecraft != null && this.minecraft.player != null) {
+		if (BeASelf.isMouseInSurvivalSelf(event.x(), event.y(), this.leftPos, this.topPos) && this.minecraft.player != null) {
 			ItemStack cursorStack = this.menu.getCarried();
 			ItemStack clickProcessedStack = null;
 
-			if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+			if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
 				ClientPlayNetworking.send(new C2SEssenceAlterationLetter(true));
 				clickProcessedStack = BeASelf.clickSelf(cursorStack, this.minecraft.player, true);
-			} else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+			} else if (event.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
 				ClientPlayNetworking.send(new C2SEssenceAlterationLetter(false));
 				clickProcessedStack = BeASelf.clickSelf(cursorStack, this.minecraft.player, false);
 			}
