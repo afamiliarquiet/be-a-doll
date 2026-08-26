@@ -12,8 +12,8 @@ import io.github.afamiliarquiet.be_a_doll.diary.BeACurator;
 import io.github.afamiliarquiet.be_a_doll.diary.BeALibrarian;
 import io.github.afamiliarquiet.be_a_doll.diary.BeAWitch;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class DollRetexturedGuiMixin {
 	@Shadow
 	private int tickCount;
@@ -42,11 +42,11 @@ public class DollRetexturedGuiMixin {
 		}
 	}
 
-	@Definition(id = "getTexture", method = "Lnet/minecraft/client/gui/Gui$HeartType;getSprite(ZZZ)Lnet/minecraft/resources/Identifier;")
-	@Expression("?.getTexture(?, ?, ?)")
+	@Definition(id = "getSprite", method = "Lnet/minecraft/client/gui/Hud$HeartType;getSprite(ZZZ)Lnet/minecraft/resources/Identifier;")
+	@Expression("?.getSprite(?, ?, ?)")
 	@ModifyExpressionValue(method = "extractHeart", at = @At("MIXINEXTRAS:EXPRESSION"))
-	private Identifier alterAbsorptionTexture(Identifier original, @Local(argsOnly = true, name = "type") Gui.HeartType type, @Local(argsOnly = true, name = "isHardcore") boolean isHardcore, @Local(argsOnly = true, name = "half") boolean half) {
-		if (type == Gui.HeartType.ABSORBING && BeAMaid.isDoll(Minecraft.getInstance().player)) {
+	private Identifier alterAbsorptionTexture(Identifier original, @Local(argsOnly = true, name = "type") Hud.HeartType type, @Local(argsOnly = true, name = "isHardcore") boolean isHardcore, @Local(argsOnly = true, name = "half") boolean half) {
+		if (type == Hud.HeartType.ABSORBING && BeAMaid.isDoll(Minecraft.getInstance().player)) {
 			if (half) {
 				if (isHardcore) {
 					return BeACurator.CARED_HEART_HARDCORE_HALF;

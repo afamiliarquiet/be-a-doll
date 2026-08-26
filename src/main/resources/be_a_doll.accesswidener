@@ -2,4 +2,4 @@ accessWidener v2 official
 
 accessible class net/minecraft/world/effect/AbsorptionMobEffect
 accessible method net/minecraft/world/effect/AbsorptionMobEffect <init> (Lnet/minecraft/world/effect/MobEffectCategory;I)V
-accessible class net/minecraft/client/gui/Gui$HeartType
+accessible class net/minecraft/client/gui/Hud$HeartType
