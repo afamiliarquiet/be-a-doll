@@ -1,28 +1,36 @@
 {
 	"required": true,
-	"package": "io.github.afamiliarquiet.be_a_doll.mixin",
+	"package": "ink.iridith.be_a_doll.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"DollNameTagItemMixin",
-		"DollToDollCommunicationPlayerManagerMixin",
+		"DollToDollCommunicationPlayerListMixin",
 		"DressUpDollEntityMixin",
 		"FragmentedDamageLivingEntityMixin",
-		"ThrowNameSelfServerPlayerEntityMixin",
-		"shoulder_riding.DollsMustDropServerPlayerEntityMixin",
-		"shoulder_riding.OopsDollDeletedYouPlayerManagerMixin",
+		"ThrowNameSelfServerPlayerMixin",
+		"shoulder_riding.DollsMustDropServerPlayerMixin",
+		"shoulder_riding.OopsDollDeletedYouPlayerListMixin",
 		"shoulder_riding.RiptideIgnorePassengersLivingEntityMixin",
-		"shoulder_riding.ShoulderAwarenessPlayerEntityMixin",
+		"shoulder_riding.ShoulderAwarenessPlayerMixin",
 		"shoulder_riding.ShoulderRidingEntityMixin",
 		"shoulder_riding.SuffocationResistanceLivingEntityMixin",
 		"synthetic_treats.ActuallyDollsCanPretendToEatItemMixin",
-		"synthetic_treats.ButItsNotParticularlyDesirablePlayerEntityMixin",
-		"synthetic_treats.DollsCantEatPlayerEntityMixin",
-		"synthetic_treats.FoxEntityTrustInvoker",
+		"synthetic_treats.ButItsNotParticularlyDesirablePlayerMixin",
+		"synthetic_treats.DollsCantEatPlayerMixin",
+		"synthetic_treats.FoxTrustInvoker",
 		"synthetic_treats.LightweightDollPowderSnowBlockMixin",
 		"synthetic_treats.RibbonPriorityEntityMixin",
 		"synthetic_treats.SyntheticDeathMessagesDamageSourceMixin",
 		"synthetic_treats.SyntheticResistanceLivingEntityMixin",
-		"synthetic_treats.SyntheticResistancePlayerEntityMixin"
+		"synthetic_treats.SyntheticResistancePlayerMixin"
+	],
+	"client": [
+		"client.DollReadableNameLivingEntityRendererMixin",
+		"client.DollRetexturedGuiMixin",
+		"client.DollsNeedNoAirGuiMixin",
+		"client.NameablePlayerRendererMixin",
+		"client.SelfCreativeModeInventoryScreenMixin",
+		"client.SelfInventoryScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
