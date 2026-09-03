@@ -2,7 +2,7 @@
 <center><img alt="mod preview" src="https://cdn.modrinth.com/data/MAd0Z2MD/images/bd6c08ac189a07ee4ce15a19e7a0983ff85a9b51.png"/></center>
 
 <center>
-Would you be a doll? I certainly would, so I made this collection of toyful tweaks for #dollgamers at ModFest: Toybox
+Would you be a doll? I certainly would, so I made this collection of toyful tweaks for #dollgamers
 </center>
 
 ---
@@ -12,7 +12,7 @@ Would you be a doll? I certainly would, so I made this collection of toyful twea
 - dolls are small!
 - dolls don't always feel like speaking up (sorta like a mixed team + proximity chat)
 - dolls can be used to play dress up!
-- dolls can be made of a variety(3) of materials
+- dolls can be made of a variety(5) of materials
 - dolls can be secured to a player's shoulders with ribbon (shift+rclick ribbon to force dolls off)
 - dolls can ride entities friendly to them with ribbon (must be tamed and big enough to hold the doll)
 - dolls can be renamed (only in world) with a nametag (dolls can see their own in f5 too) (this is cleared when you become not-doll)
@@ -21,13 +21,13 @@ Would you be a doll? I certainly would, so I made this collection of toyful twea
 - dolls are sustained by repairs instead of food (use your dollcraft item with sticks/clay/string/resin brick/gold nugget in inventory)
 - dolls can also be repaired by others with the right tool and material
 
-There's also two potion effects you may see along the way - one's effect is reasonably obvious, and the other makes you hurt more.
+there's also two potion effects you may see along the way - one's effect is reasonably obvious, and the other makes you hurt more.
 
 ---
 
-### How to:
+### How To:
 
-you'll need to craft one of the three dollcraft items to become a doll!
+you'll need to craft one of the five dollcraft items to become a doll!
 * carving knife - like an iron sword but with iron nuggets
 * modeling tool - like a carving knife but with two more nuggets on the sides
 * sewing needle - like a fishing rod without the string. and made of iron nuggets
@@ -52,7 +52,7 @@ there's also config to customize or disable this, which makes me happy!)
 
 ---
 
-### tweaks:
+### Tweaks:
 
 launching with the mod will generate a config at `<minecraft folder>/config/be_a_doll.toml`, which can be used to tweak
 the chat interference that comes with being a doll.
