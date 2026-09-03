@@ -1,37 +1,38 @@
 {
-	"required": true,
-	"package": "io.github.afamiliarquiet.be_a_doll.mixin",
-	"compatibilityLevel": "JAVA_17",
-	"mixins": [
-		"AnnihilateDollEffectsMixin",
-		"AnnihilateOtherEffectsMixin",
-		"DollNameTagItemMixin",
-		"DollToDollCommunicationPlayerManagerMixin",
-		"DressUpDollEntityMixin",
-		"FragmentedDamageLivingEntityMixin",
-		"NotifyOfDollMixin",
-		"SharpDollcraftToolsMixin",
-		"ThrowNameSelfServerPlayerEntityMixin",
-		"shoulder_riding.DollsMustDropServerPlayerEntityMixin",
-		"shoulder_riding.OopsDollDeletedYouPlayerManagerMixin",
-		"shoulder_riding.RiptideIgnorePassengersLivingEntityMixin",
-		"shoulder_riding.ShoulderAwarenessPlayerEntityMixin",
-		"shoulder_riding.ShoulderRidingEntityMixin",
-		"shoulder_riding.SuffocationResistanceLivingEntityMixin",
-		"synthetic_treats.ActuallyDollsCanPretendToEatItemMixin",
-		"synthetic_treats.ButItsNotParticularlyDesirablePlayerEntityMixin",
-		"synthetic_treats.DollsCantEatPlayerEntityMixin",
-		"synthetic_treats.FoxEntityTrustInvoker",
-		"synthetic_treats.LightweightDollPowderSnowBlockMixin",
-		"synthetic_treats.RibbonPriorityEntityMixin",
-		"synthetic_treats.SyntheticDeathMessagesDamageSourceMixin",
-		"synthetic_treats.SyntheticResistanceLivingEntityMixin",
-		"synthetic_treats.SyntheticResistancePlayerEntityMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
+  "required": true,
+  "package": "io.github.afamiliarquiet.be_a_doll.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "AnnihilateDollEffectsMixin",
+    "AnnihilateOtherEffectsMixin",
+    "DollNameTagItemMixin",
+    "DollToDollCommunicationPlayerManagerMixin",
+    "DressUpDollEntityMixin",
+    "FragmentedDamageLivingEntityMixin",
+    "NotifyOfDollMixin",
+    "SharpDollcraftToolsMixin",
+    "ThrowNameSelfServerPlayerEntityMixin",
+    "shoulder_riding.DollsMustDropServerPlayerEntityMixin",
+    "shoulder_riding.OopsDollDeletedYouPlayerManagerMixin",
+    "shoulder_riding.RideableWolfEntityMixin",
+    "shoulder_riding.RiptideIgnorePassengersLivingEntityMixin",
+    "shoulder_riding.ShoulderAwarenessPlayerEntityMixin",
+    "shoulder_riding.ShoulderRidingEntityMixin",
+    "shoulder_riding.SuffocationResistanceLivingEntityMixin",
+    "synthetic_treats.ActuallyDollsCanPretendToEatItemMixin",
+    "synthetic_treats.ButItsNotParticularlyDesirablePlayerEntityMixin",
+    "synthetic_treats.DollsCantEatPlayerEntityMixin",
+    "synthetic_treats.FoxEntityTrustInvoker",
+    "synthetic_treats.LightweightDollPowderSnowBlockMixin",
+    "synthetic_treats.RibbonPriorityEntityMixin",
+    "synthetic_treats.SyntheticDeathMessagesDamageSourceMixin",
+    "synthetic_treats.SyntheticResistanceLivingEntityMixin",
+    "synthetic_treats.SyntheticResistancePlayerEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
 	}
 }

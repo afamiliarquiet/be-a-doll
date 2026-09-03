@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
@@ -86,13 +87,14 @@ public class DollRetexturedInGameHudMixin {
 		}
 	}
 
-	@ModifyExpressionValue(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;hasStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z"))
+	// slice off the zombification rune
+	@ModifyExpressionValue(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;hasStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Z"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHealthBar(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/player/PlayerEntity;IIIIFIIIZ)V")))
 	private boolean orOverflowing(boolean original, @Local(name = "playerEntity", ordinal = 0) PlayerEntity player) {
 		return original || player.hasStatusEffect(BeAWitch.OVERFLOWING.value());
 	}
 
 	@ModifyExpressionValue(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;getSaturationLevel()F"))
-	private float resaturatingWave(float original, @Local PlayerEntity player, @Local(name="y", ordinal = 15) int index, @Local(name="z", ordinal = 16) LocalIntRef yPos) {
+	private float resaturatingWave(float original, @Local PlayerEntity player, @Local(name="y", ordinal = 14) int index, @Local(name="z", ordinal = 15) LocalIntRef yPos) {
 		if (player.hasStatusEffect(BeAWitch.OVERFLOWING.value()) && BeAMaid.isDoll(player)) {
 			// if i was a super optimizer i could put the ticks % 15 outside the for loop.
 			if (index == this.ticks % 25) {
