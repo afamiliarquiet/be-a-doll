@@ -47,7 +47,7 @@ public class BeACook {
 				for (int i = 0; i < input.size(); i++) {
 					ItemStack current = input.getItem(i);
 					if (!current.isEmpty()) {
-						if (current.is(BeAResearcher.DOLLCRAFT_ITEMS) || current.is(Items.DIAMOND_PICKAXE)) {
+						if (current.is(BeAResearcher.ESSENCE_SCENTS)) {
 							if (hasOneDollcraftItem) {
 								return false;
 							}
@@ -84,7 +84,7 @@ public class BeACook {
 						}
 
 						essenceFragment = current;
-					} else if (current.is(Items.DIAMOND_PICKAXE)) {
+					} else if (current.is(BeAResearcher.PLAYER_ITEMS)) {
 						if (dollVariant != null) {
 							return ItemStack.EMPTY;
 						}
@@ -121,7 +121,7 @@ public class BeACook {
 				ItemStack weirdAndUnlikelyRemainder = current.getCraftingRemainingItem();
 				if (!weirdAndUnlikelyRemainder.isEmpty()) {
 					remainders.set(i, weirdAndUnlikelyRemainder.copy());
-				} else if (current.is(BeAResearcher.DOLLCRAFT_ITEMS) || current.is(Items.DIAMOND_PICKAXE)) {
+				} else if (current.is(BeAResearcher.ESSENCE_SCENTS)) {
 					remainders.set(i, current.copyWithCount(1));
 					break;
 				}
