@@ -32,6 +32,8 @@
 	"tag.item.be_a_doll.plastic_doll_care_materials": "Plastic Doll Care Materials",
 	"tag.item.be_a_doll.clockwork_doll_care_materials": "Clockwork Doll Care Materials",
 	"tag.item.be_a_doll.dollcraft_items": "Dollcraft Tools",
+	"tag.item.be_a_doll.player_items": "Player Tools",
+	"tag.item.be_a_doll.essence_scents": "Essence-scenting Items",
 
 	"effect.be_a_doll.cared_for": "Cared For",
 	"effect.be_a_doll.fragmented": "Fragmented",

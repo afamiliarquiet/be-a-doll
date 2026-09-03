@@ -17,6 +17,8 @@ public class BeAResearcher {
 	public static final TagKey<Item> CLOCKWORK_DOLL_CARE_MATERIALS = item("clockwork_doll_care_materials");
 
 	public static final TagKey<Item> DOLLCRAFT_ITEMS = item("dollcraft_items");
+	public static final TagKey<Item> PLAYER_ITEMS = item("player_items");
+	public static final TagKey<Item> ESSENCE_SCENTS = item("essence_scents");
 
 	public static void grantFunding() {
 
